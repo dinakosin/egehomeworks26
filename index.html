@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title> English homework for Milana </title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  /* SA Jackson — декоративный шрифт. Если он недоступен локально, подключаем как fallback Lato */
+  @font-face {
+    font-family: 'SA Jackson';
+    src: local('SA Jackson'), local('SAJackson');
+    font-display: swap;
+  }
+
+  :root {
+    --butter:   #FFED9E;
+    --twilight: #426BC2;
+    --leaves:   #4A9166;
+    --sky:      #A6CFF2;
+    --blossom:  #F2C0CA;
+    --forest:   #124224;
+    --cloud:    #F7F2E8;
+    --apple:    #A6BA1A;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Lato', Arial, sans-serif;
+    background-color: var(--cloud);
+    color: var(--forest);
+    margin: 0;
+    padding: 20px;
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  .container {
+    max-width: 850px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 16px;
+    padding: 35px 40px;
+    box-shadow: 0 4px 20px rgba(18, 66, 36, 0.1);
+  }
+
+  h1 {
+    font-family: 'SA Jackson', 'Lato', cursive;
+    color: var(--twilight);
+    font-size: 42px;
+    text-align: center;
+    margin: 0 0 10px;
+    font-weight: 900;
+  }
+
+  h2 {
+    font-family: 'SA Jackson', 'Lato', cursive;
+    color: var(--forest);
+    font-size: 28px;
+    border-bottom: 3px solid var(--butter);
+    padding-bottom: 8px;
+    margin-top: 40px;
+  }
+
+  .intro {
+    background-color: var(--butter);
+    padding: 15px 20px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 17px;
+  }
+
+  .task-instruction {
+    font-style: italic;
+    color: var(--twilight);
+    margin-bottom: 18px;
+    font-weight: 700;
+  }
+
+  /* ===== EXERCISE 1: MATCH EMOTION ===== */
+  .match-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .words-column, .emoji-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .draggable-word {
+    background-color: var(--sky);
+    color: var(--forest);
+    padding: 12px 18px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: grab;
+    font-weight: 700;
+    font-size: 18px;
+    border: 2px solid transparent;
+    user-select: none;
+    transition: transform 0.15s;
+  }
+  .draggable-word:active { cursor: grabbing; transform: scale(0.97); }
+  .draggable-word.placed { opacity: 0.5; cursor: not-allowed; }
+
+  .emoji-slot {
+    background-color: var(--cloud);
+    border: 2px dashed var(--leaves);
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-height: 60px;
+  }
+  .emoji-slot .emoji { font-size: 36px; }
+  .emoji-slot .drop-zone {
+    flex: 1;
+    min-height: 45px;
+    border: 2px dashed #bbb;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 14px;
+  }
+  .emoji-slot.correct { background-color: #d4f4dd; border-color: var(--leaves); }
+  .emoji-slot.incorrect { background-color: #f9d6d6; border-color: #c0392b; }
+  .emoji-slot .drop-zone.filled { border-style: solid; color: var(--forest); font-weight: 700; }
+
+  /* ===== EXERCISE 2: PRONOUN BINS ===== */
+  .pronoun-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: var(--cloud);
+    border-radius: 10px;
+  }
+  .pronoun {
+    background-color: var(--blossom);
+    color: var(--forest);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: grab;
+    font-weight: 700;
+    font-size: 18px;
+    user-select: none;
+  }
+  .pronoun.placed { opacity: 0.6; }
+
+  .bins-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+  }
+  .bin {
+    background-color: var(--sky);
+    border-radius: 12px;
+    padding: 15px;
+    min-height: 180px;
+    text-align: center;
+  }
+  .bin h3 {
+    font-family: 'SA Jackson', 'Lato', cursive;
+    margin: 0 0 12px;
+    font-size: 32px;
+    color: var(--twilight);
+  }
+  .bin .bin-drop {
+    min-height: 120px;
+    border: 2px dashed white;
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .bin .bin-drop .pronoun { background-color: white; }
+  .bin.correct-drop .pronoun.wrong { background-color: #f9d6d6; }
+  .bin.correct-drop .pronoun.right { background-color: #d4f4dd; }
+
+  /* ===== EXERCISE 3: FILL IN GAPS ===== */
+  .gap-sentence {
+    margin: 12px 0;
+    font-size: 19px;
+  }
+  .gap-sentence input {
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    padding: 6px 10px;
+    border: 2px solid var(--twilight);
+    border-radius: 6px;
+    width: 90px;
+    text-align: center;
+    margin: 0 6px;
+  }
+  .gap-sentence input.correct { border-color: var(--leaves); background-color: #d4f4dd; }
+  .gap-sentence input.incorrect { border-color: #c0392b; background-color: #f9d6d6; }
+
+  /* ===== EXERCISE 4: BUILD SENTENCE ===== */
+  .builder {
+    background-color: var(--cloud);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  .word-bank, .sentence-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 50px;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  .word-bank {
+    background-color: white;
+    border: 2px dashed var(--leaves);
+    margin-bottom: 10px;
+  }
+  .sentence-area {
+    background-color: var(--butter);
+    border: 2px solid var(--twilight);
+  }
+  .word-token {
+    background-color: var(--twilight);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+    user-select: none;
+  }
+  .word-token:hover { background-color: var(--forest); }
+
+  /* ===== EXERCISE 5: SPELLING ===== */
+  .spelling-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 12px 0;
+    font-size: 19px;
+  }
+  .scrambled {
+    background-color: var(--blossom);
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-family: monospace;
+    letter-spacing: 2px;
+    font-size: 20px;
+  }
+  .spelling-item input {
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    padding: 6px 12px;
+    border: 2px solid var(--twilight);
+    border-radius: 6px;
+    width: 160px;
+  }
+  .spelling-item input.correct { border-color: var(--leaves); background-color: #d4f4dd; }
+  .spelling-item input.incorrect { border-color: #c0392b; background-color: #f9d6d6; }
+
+  /* ===== BUTTON & RESULTS ===== */
+  #checkButton {
+    display: block;
+    margin: 40px auto 20px;
+    background-color: var(--apple);
+    color: var(--forest);
+    border: none;
+    padding: 16px 40px;
+    font-size: 20px;
+    font-weight: 900;
+    font-family: 'Lato', sans-serif;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--forest);
+    transition: transform 0.1s;
+  }
+  #checkButton:hover { background-color: var(--leaves); color: white; }
+  #checkButton:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--forest); }
+
+  #results {
+    background-color: var(--butter);
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin-top: 20px;
+  }
+  #results h2 {
+    color: var(--forest);
+    border: none;
+    margin-top: 0;
+    text-align: center;
+  }
+  #results ul {
+    list-style: none;
+    padding: 0;
+    font-size: 19px;
+  }
+  #results li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(18, 66, 36, 0.2);
+  }
+  #results .total {
+    font-family: 'SA Jackson', 'Lato', cursive;
+    font-size: 30px;
+    color: var(--twilight);
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 900;
+  }
+/* ===== FLASHCARDS ===== */
+.flashcard-container {
+  background-color: var(--cloud);
+  border-radius: 12px;
+  padding: 25px;
+  text-align: center;
+}
+
+.flashcard-progress {
+  font-size: 16px;
+  color: var(--twilight);
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.flashcard {
+  perspective: 1000px;
+  width: 100%;
+  max-width: 400px;
+  height: 220px;
+  margin: 0 auto 20px;
+  cursor: pointer;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flashcard.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front, .flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-shadow: 0 6px 20px rgba(18, 66, 36, 0.15);
+}
+
+.flashcard-front {
+  background: linear-gradient(135deg, var(--sky), var(--twilight));
+  color: white;
+}
+
+.flashcard-back {
+  background: linear-gradient(135deg, var(--butter), var(--apple));
+  color: var(--forest);
+  transform: rotateY(180deg);
+}
+
+.flashcard-emoji {
+  font-size: 64px;
+  margin-bottom: 10px;
+}
+
+.flashcard-text {
+  font-family: 'Lato', Arial, sans-serif;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.flashcard-text.small {
+  font-size: 22px;
+}
+
+.flashcard-hint {
+  position: absolute;
+  bottom: 10px;
+  font-size: 13px;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+.flashcard-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.flashcard-btn {
+  background-color: var(--twilight);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Lato', sans-serif;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.flashcard-btn:hover {
+  background-color: var(--forest);
+}
+
+.flashcard-btn.shuffle {
+  background-color: var(--apple);
+  color: var(--forest);
+}
+
+.flashcard-btn.shuffle:hover {
+  background-color: var(--leaves);
+  color: white;
+}
+
+  @media (max-width: 600px) {
+    .container { padding: 20px; }
+    .match-container, .bins-container { grid-template-columns: 1fr; }
+    h1 { font-size: 32px; }
+  }
+
+  /* ===== MODAL POPUP ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(18, 66, 36, 0.6);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-window {
+  background-color: white;
+  border-radius: 20px;
+  padding: 35px 30px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: slideUp 0.4s ease;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--twilight);
+  font-family: 'Lato', sans-serif;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--forest);
+}
+
+.modal-emoji {
+  font-size: 60px;
+  margin-bottom: 10px;
+}
+
+.modal-title {
+  font-family: 'Lato', sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--forest);
+  margin-bottom: 12px;
+}
+
+.modal-text {
+  font-family: 'Lato', sans-serif;
+  font-size: 17px;
+  color: var(--twilight);
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+
+.modal-text b {
+  color: var(--forest);
+}
+
+.modal-result-preview {
+  background-color: var(--cloud);
+  border-radius: 10px;
+  padding: 15px;
+  font-family: 'Lato', sans-serif;
+  font-size: 14px;
+  color: var(--forest);
+  text-align: left;
+  margin-bottom: 22px;
+  max-height: 180px;
+  overflow-y: auto;
+  white-space: pre-line;
+  border-left: 4px solid var(--apple);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.modal-btn {
+  padding: 12px 22px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Lato', sans-serif;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-btn.copy {
+  background-color: var(--twilight);
+  color: white;
+}
+
+.modal-btn.copy:hover {
+  background-color: var(--forest);
+  transform: translateY(-2px);
+}
+
+.modal-btn.copy.copied {
+  background-color: var(--leaves);
+}
+
+.modal-btn.vk {
+  background-color: #0077FF;
+  color: white;
+  text-decoration: none;
+}
+
+.modal-btn.vk:hover {
+  background-color: #0066DD;
+  transform: translateY(-2px);
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Homework: Lesson 1</h1>
+  <div class="intro">
+    Hello! 🌟 Выполни эти задания, чтобы закрепить материал первого урока.<br>
+    В конце нажми кнопку <b>«Показать результаты»</b>, чтобы увидеть свой результат.
+  </div>
+
+    <!-- ====================== EXERCISE 0: FLASHCARDS (WARM-UP) ====================== -->
+  <h2>0. Revision: Flashcards 🎴</h2>
+  <p class="task-instruction">Кликни на карточку, чтобы перевернуть её. Используй кнопки, чтобы листать.</p>
+  <div class="flashcard-container">
+    <div class="flashcard-progress" id="progressTop">Карточка 1 из 17</div>
+    <div class="flashcard" id="flashcardTop">
+      <div class="flashcard-inner">
+        <div class="flashcard-front">
+          <div class="flashcard-emoji" id="frontEmojiTop"></div>
+          <div class="flashcard-text" id="frontTextTop"></div>
+          <div class="flashcard-hint">👆 Нажми, чтобы перевернуть</div>
+        </div>
+        <div class="flashcard-back">
+          <div class="flashcard-text" id="backTextTop"></div>
+          <div class="flashcard-hint">👆 Нажми, чтобы вернуться</div>
+        </div>
+      </div>
+    </div>
+    <div class="flashcard-controls">
+      <button class="flashcard-btn" onclick="prevCard('Top')">← Назад</button>
+      <button class="flashcard-btn shuffle" onclick="shuffleCards('Top')">🔀 Перемешать</button>
+      <button class="flashcard-btn" onclick="nextCard('Top')">Вперёд →</button>
+    </div>
+  </div>
+
+  <!-- ====================== EXERCISE 1 ====================== -->
+  <h2>1. Match the word to the emojies.</h2>
+  <p class="task-instruction">Перетащи слова к подходящим эмодзи.</p>
+  <div class="match-container">
+    <div class="words-column" id="wordsColumn">
+      <div class="draggable-word" draggable="true" data-word="happy">happy</div>
+      <div class="draggable-word" draggable="true" data-word="sad">sad</div>
+      <div class="draggable-word" draggable="true" data-word="angry">angry</div>
+      <div class="draggable-word" draggable="true" data-word="tired">tired</div>
+      <div class="draggable-word" draggable="true" data-word="hungry">hungry</div>
+      <div class="draggable-word" draggable="true" data-word="shy">shy</div>
+    </div>
+    <div class="emoji-column" id="emojiColumn">
+            <div class="emoji-slot" data-answer="sad"><span class="emoji">😢</span><div class="drop-zone">сюда</div></div>
+      <div class="emoji-slot" data-answer="happy"><span class="emoji">😊</span><div class="drop-zone">сюда</div></div>
+            <div class="emoji-slot" data-answer="hungry"><span class="emoji">🍔</span><div class="drop-zone">сюда</div></div>
+      <div class="emoji-slot" data-answer="shy"><span class="emoji">😳</span><div class="drop-zone">сюда</div></div>
+      <div class="emoji-slot" data-answer="angry"><span class="emoji">😠</span><div class="drop-zone">сюда</div></div>
+      <div class="emoji-slot" data-answer="tired"><span class="emoji">😴</span><div class="drop-zone">сюда</div></div>
+    </div>
+  </div>
+
+  <!-- ====================== EXERCISE 2 ====================== -->
+  <h2>2. Sort the pronouns to their correct form of to be</h2>
+  <p class="task-instruction">Перетащи местоимения в правильную корзину.</p>
+  <div class="pronoun-pool" id="pronounPool">
+    <div class="pronoun" draggable="true" data-pronoun="I" data-correct="am">I</div>
+    <div class="pronoun" draggable="true" data-pronoun="He" data-correct="is">He</div>
+    <div class="pronoun" draggable="true" data-pronoun="She" data-correct="is">She</div>
+    <div class="pronoun" draggable="true" data-pronoun="It" data-correct="is">It</div>
+    <div class="pronoun" draggable="true" data-pronoun="You" data-correct="are">You</div>
+    <div class="pronoun" draggable="true" data-pronoun="We" data-correct="are">We</div>
+    <div class="pronoun" draggable="true" data-pronoun="They" data-correct="are">They</div>
+  </div>
+  <div class="bins-container">
+    <div class="bin"><h3>am</h3><div class="bin-drop" data-bin="am"></div></div>
+    <div class="bin"><h3>is</h3><div class="bin-drop" data-bin="is"></div></div>
+    <div class="bin"><h3>are</h3><div class="bin-drop" data-bin="are"></div></div>
+  </div>
+
+  <!-- ====================== EXERCISE 3 ====================== -->
+  <h2>3. Write «am», «is» or «are»</h2>
+  <p class="task-instruction">Напечатай правильную форму глагола to be.</p>
+  <div id="gapsContainer">
+    <div class="gap-sentence">1. I <input type="text" data-answer="am"> hungry.</div>
+    <div class="gap-sentence">2. She <input type="text" data-answer="is"> a beautiful model.</div>
+    <div class="gap-sentence">3. They <input type="text" data-answer="are"> not sad.</div>
+    <div class="gap-sentence">4. We <input type="text" data-answer="are"> tired.</div>
+    <div class="gap-sentence">5. He <input type="text" data-answer="is"> an actor.</div>
+    <div class="gap-sentence">6. It <input type="text" data-answer="is"> a lazy cat.</div>
+    <div class="gap-sentence">7. You <input type="text" data-answer="are"> kind.</div>
+    <div class="gap-sentence">8. I <input type="text" data-answer="am"> not angry.</div>
+  </div>
+
+  <!-- ====================== EXERCISE 4 ====================== -->
+  <h2>4. Make sentences</h2>
+  <p class="task-instruction">Кликай на слова по очереди, чтобы построить предложение. Чтобы убрать слово — кликни по нему в нижней строке.</p>
+  <div id="builderContainer"></div>
+
+  <!-- ====================== EXERCISE 5 ====================== -->
+  <h2>5. Unscramble words</h2>
+  <p class="task-instruction">Буквы перепутались! Напиши слово правильно.</p>
+  <div id="spellingContainer">
+    <div class="spelling-item"><span class="scrambled">gnuhry</span> → <input type="text" data-answer="hungry"></div>
+    <div class="spelling-item"><span class="scrambled">yppha</span> → <input type="text" data-answer="happy"></div>
+    <div class="spelling-item"><span class="scrambled">drite</span> → <input type="text" data-answer="tired"></div>
+    <div class="spelling-item"><span class="scrambled">yrgna</span> → <input type="text" data-answer="angry"></div>
+  </div>
+
+    <!-- ====================== EXERCISE 6: FLASHCARDS (REVIEW) ====================== -->
+  <h2>6. Final revision: Flashcards 🎴</h2>
+  <p class="task-instruction">Повтори все слова и правила ещё раз. Постарайся сначала вспомнить ответ, а потом проверить!</p>
+  <div class="flashcard-container">
+    <div class="flashcard-progress" id="progressBottom">Карточка 1 из 17</div>
+    <div class="flashcard" id="flashcardBottom">
+      <div class="flashcard-inner">
+        <div class="flashcard-front">
+          <div class="flashcard-emoji" id="frontEmojiBottom"></div>
+          <div class="flashcard-text" id="frontTextBottom"></div>
+          <div class="flashcard-hint">👆 Нажми, чтобы перевернуть</div>
+        </div>
+        <div class="flashcard-back">
+          <div class="flashcard-text" id="backTextBottom"></div>
+          <div class="flashcard-hint">👆 Нажми, чтобы вернуться</div>
+        </div>
+      </div>
+    </div>
+    <div class="flashcard-controls">
+      <button class="flashcard-btn" onclick="prevCard('Bottom')">← Назад</button>
+      <button class="flashcard-btn shuffle" onclick="shuffleCards('Bottom')">🔀 Перемешать</button>
+      <button class="flashcard-btn" onclick="nextCard('Bottom')">Вперёд →</button>
+    </div>
+  </div>
+
+  <!-- ====================== BUTTON & RESULTS ====================== -->
+  <button id="checkButton">Показать результаты ✨</button>
+  <div id="results" style="display:none;"></div>
+</div>
+
+<script>
+  /* =========================================================
+   FLASHCARDS (Exercise 0 & 6)
+========================================================= */
+const flashcardsData = [
+  // Vocabulary cards (with emoji)
+  { type: 'vocab', emoji: '😊', front: 'счастливый', back: 'happy' },
+  { type: 'vocab', emoji: '😢', front: 'грустный',   back: 'sad' },
+  { type: 'vocab', emoji: '😠', front: 'злой',       back: 'angry' },
+  { type: 'vocab', emoji: '😴', front: 'уставший',   back: 'tired' },
+  { type: 'vocab', emoji: '🍔', front: 'голодный',   back: 'hungry' },
+  { type: 'vocab', emoji: '😳', front: 'стеснительный', back: 'shy' },
+  { type: 'vocab', emoji: '🤒', front: 'больной',    back: 'sick' },
+  { type: 'vocab', emoji: '😌', front: 'расслабленный', back: 'relaxed' },
+  { type: 'vocab', emoji: '🦥', front: 'ленивый',    back: 'lazy' },
+  { type: 'vocab', emoji: '💖', front: 'красивая',   back: 'beautiful' },
+  { type: 'vocab', emoji: '🤗', front: 'добрый',     back: 'kind' },
+  { type: 'vocab', emoji: '🎭', front: 'актёр',      back: 'an actor' },
+  { type: 'vocab', emoji: '💃', front: 'модель',     back: 'a model' },
+  // Grammar cards
+  { type: 'grammar', emoji: '📚', front: 'I + ?',                 back: 'I am' },
+  { type: 'grammar', emoji: '📚', front: 'He / She / It + ?',     back: 'is' },
+  { type: 'grammar', emoji: '📚', front: 'You / We / They + ?',   back: 'are' },
+  { type: 'grammar', emoji: '💡', front: 'В русском: «Она красивая». А в английском?', back: 'She IS beautiful. Нужен глагол to be!' }
+];
+
+// Separate state for top and bottom flashcards
+const cardState = {
+  Top:    { cards: [...flashcardsData], index: 0 },
+  Bottom: { cards: [...flashcardsData], index: 0 }
+};
+
+// Shuffle initially so order is random on load
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+shuffleArray(cardState.Top.cards);
+shuffleArray(cardState.Bottom.cards);
+
+function renderCard(pos) {
+  const state = cardState[pos];
+  const card = state.cards[state.index];
+  const flashcard = document.getElementById('flashcard' + pos);
+
+  // Reset flip
+  flashcard.classList.remove('flipped');
+
+  // Fill content
+  document.getElementById('frontEmoji' + pos).textContent = card.emoji;
+  document.getElementById('frontText' + pos).textContent = card.front;
+  document.getElementById('backText' + pos).textContent = card.back;
+
+  // Smaller font for long grammar answers
+  const backEl = document.getElementById('backText' + pos);
+  const frontEl = document.getElementById('frontText' + pos);
+  backEl.classList.toggle('small', card.back.length > 15);
+  frontEl.classList.toggle('small', card.front.length > 18);
+
+  // Update progress text
+  document.getElementById('progress' + pos).textContent =
+    `Карточка ${state.index + 1} из ${state.cards.length}`;
+}
+
+function nextCard(pos) {
+  const state = cardState[pos];
+  state.index = (state.index + 1) % state.cards.length;
+  renderCard(pos);
+}
+
+function prevCard(pos) {
+  const state = cardState[pos];
+  state.index = (state.index - 1 + state.cards.length) % state.cards.length;
+  renderCard(pos);
+}
+
+function shuffleCards(pos) {
+  shuffleArray(cardState[pos].cards);
+  cardState[pos].index = 0;
+  renderCard(pos);
+}
+
+// Click on card to flip
+['Top', 'Bottom'].forEach(pos => {
+  document.getElementById('flashcard' + pos).addEventListener('click', () => {
+    document.getElementById('flashcard' + pos).classList.toggle('flipped');
+  });
+  renderCard(pos);
+});
+/* =========================================================
+   EXERCISE 1: DRAG & DROP — MATCH EMOTIONS
+========================================================= */
+let draggedWord = null;
+
+document.querySelectorAll('#wordsColumn .draggable-word').forEach(el => {
+  el.addEventListener('dragstart', e => {
+    if (el.classList.contains('placed')) { e.preventDefault(); return; }
+    draggedWord = el;
+    e.dataTransfer.effectAllowed = 'move';
+  });
+});
+
+document.querySelectorAll('#emojiColumn .emoji-slot').forEach(slot => {
+  const dropZone = slot.querySelector('.drop-zone');
+
+  slot.addEventListener('dragover', e => e.preventDefault());
+
+  slot.addEventListener('drop', e => {
+    e.preventDefault();
+    if (!draggedWord) return;
+    const word = draggedWord.dataset.word;
+    const answer = slot.dataset.answer;
+
+    // Set the word into the drop zone visually
+    dropZone.textContent = word;
+    dropZone.classList.add('filled');
+    dropZone.dataset.placed = word;
+
+    // Visual feedback
+    if (word === answer) {
+      slot.classList.add('correct');
+      slot.classList.remove('incorrect');
+    } else {
+      slot.classList.add('incorrect');
+      slot.classList.remove('correct');
+    }
+
+    // Mark word as placed
+    draggedWord.classList.add('placed');
+    draggedWord.setAttribute('draggable', 'false');
+    draggedWord = null;
+  });
+});
+
+/* =========================================================
+   EXERCISE 2: DRAG & DROP — PRONOUN BINS
+========================================================= */
+let draggedPronoun = null;
+
+document.querySelectorAll('#pronounPool .pronoun').forEach(el => {
+  el.addEventListener('dragstart', e => {
+    if (el.classList.contains('placed')) { e.preventDefault(); return; }
+    draggedPronoun = el;
+  });
+});
+
+document.querySelectorAll('.bin-drop').forEach(bin => {
+  bin.addEventListener('dragover', e => e.preventDefault());
+
+  bin.addEventListener('drop', e => {
+    e.preventDefault();
+    if (!draggedPronoun) return;
+    const correct = draggedPronoun.dataset.correct;
+    const binName = bin.dataset.bin;
+
+    // Move the element into the bin
+    const clone = draggedPronoun.cloneNode(true);
+    clone.dataset.placedIn = binName;
+    if (correct === binName) clone.classList.add('right');
+    else clone.classList.add('wrong');
+    bin.appendChild(clone);
+
+    draggedPronoun.classList.add('placed');
+    draggedPronoun.setAttribute('draggable', 'false');
+    draggedPronoun = null;
+  });
+});
+
+/* =========================================================
+   EXERCISE 3: FILL IN GAPS — instant feedback on blur
+========================================================= */
+document.querySelectorAll('#gapsContainer input').forEach(input => {
+  input.addEventListener('blur', () => {
+    const val = input.value.trim().toLowerCase();
+    if (val === '') {
+      input.classList.remove('correct', 'incorrect');
+      return;
+    }
+    if (val === input.dataset.answer) {
+      input.classList.add('correct');
+      input.classList.remove('incorrect');
+    } else {
+      input.classList.add('incorrect');
+      input.classList.remove('correct');
+    }
+  });
+});
+
+/* =========================================================
+   EXERCISE 4: BUILD SENTENCE (click-based)
+========================================================= */
+const sentences = [
+  { jumbled: ['am','I','happy'],          correct: 'I am happy' },
+  { jumbled: ['are','not','We','sick'],   correct: 'We are not sick' },
+  { jumbled: ['is','kind','He'],          correct: 'He is kind' },
+  { jumbled: ['They','actors','are'],     correct: 'They are actors' }
+];
+
+const builderContainer = document.getElementById('builderContainer');
+
+sentences.forEach((s, idx) => {
+  const wrap = document.createElement('div');
+  wrap.className = 'builder';
+  wrap.innerHTML = `
+    <div><b>Предложение ${idx+1}:</b></div>
+    <div class="word-bank" data-bank="${idx}"></div>
+    <div class="sentence-area" data-area="${idx}"></div>
+  `;
+  builderContainer.appendChild(wrap);
+
+  const bank = wrap.querySelector('.word-bank');
+  const area = wrap.querySelector('.sentence-area');
+
+  // Shuffle words and create tokens
+  const shuffled = [...s.jumbled].sort(() => Math.random() - 0.5);
+  shuffled.forEach(word => {
+    const token = document.createElement('span');
+    token.className = 'word-token';
+    token.textContent = word;
+    token.addEventListener('click', () => area.appendChild(token));
+    bank.appendChild(token);
+  });
+
+  // Click words in sentence-area to send back
+  area.addEventListener('click', e => {
+    if (e.target.classList.contains('word-token')) {
+      bank.appendChild(e.target);
+    }
+  });
+});
+
+/* =========================================================
+   EXERCISE 5: SPELLING — instant feedback
+========================================================= */
+document.querySelectorAll('#spellingContainer input').forEach(input => {
+  input.addEventListener('blur', () => {
+    const val = input.value.trim().toLowerCase();
+    if (val === '') { input.classList.remove('correct','incorrect'); return; }
+    if (val === input.dataset.answer) {
+      input.classList.add('correct');
+      input.classList.remove('incorrect');
+    } else {
+      input.classList.add('incorrect');
+      input.classList.remove('correct');
+    }
+  });
+});
+
+/* =========================================================
+   FINAL CHECK — calculate scores
+========================================================= */
+document.getElementById('checkButton').addEventListener('click', () => {
+
+  // --- Exercise 1 ---
+  let ex1 = 0;
+  const slots1 = document.querySelectorAll('#emojiColumn .emoji-slot');
+  slots1.forEach(slot => {
+    if (slot.querySelector('.drop-zone').dataset.placed === slot.dataset.answer) ex1++;
+  });
+
+  // --- Exercise 2 ---
+  let ex2 = 0;
+  document.querySelectorAll('.bin-drop').forEach(bin => {
+    const binName = bin.dataset.bin;
+    bin.querySelectorAll('.pronoun').forEach(p => {
+      if (p.dataset.correct === binName) ex2++;
+    });
+  });
+
+    // --- Exercise 3 ---
+  let ex3 = 0;
+  document.querySelectorAll('#gapsContainer input').forEach(input => {
+    if (input.value.trim().toLowerCase() === input.dataset.answer) ex3++;
+  });
+
+  // --- Exercise 4: Build Sentence ---
+  let ex4 = 0;
+  sentences.forEach((s, idx) => {
+    const area = document.querySelector(`.sentence-area[data-area="${idx}"]`);
+    const tokens = area.querySelectorAll('.word-token');
+    const userSentence = Array.from(tokens).map(t => t.textContent).join(' ');
+    if (userSentence === s.correct) {
+      ex4++;
+      area.style.backgroundColor = '#d4f4dd';
+      area.style.borderColor = '#4A9166';
+    } else {
+      area.style.backgroundColor = '#f9d6d6';
+      area.style.borderColor = '#c0392b';
+    }
+  });
+
+  // --- Exercise 5: Spelling ---
+  let ex5 = 0;
+  document.querySelectorAll('#spellingContainer input').forEach(input => {
+    if (input.value.trim().toLowerCase() === input.dataset.answer) ex5++;
+  });
+
+  // --- Calculate totals ---
+  const total = ex1 + ex2 + ex3 + ex4 + ex5;
+  const maxTotal = 6 + 7 + 8 + 4 + 4; // = 29
+
+  // --- Encouraging message based on score ---
+  let message = '';
+  const percentage = (total / maxTotal) * 100;
+  if (percentage === 100) {
+    message = '🏆 Превосходно! Идеальный результат!';
+  } else if (percentage >= 80) {
+    message = '⭐ Отлично! Ты молодец!';
+  } else if (percentage >= 60) {
+    message = '👍 Хорошо! Продолжай учиться!';
+  } else if (percentage >= 40) {
+    message = '💪 Неплохо! Повтори материал ещё раз.';
+  } else {
+    message = '📚 Не расстраивайся! Давай повторим урок вместе.';
+  }
+
+  // --- Display results ---
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.style.display = 'block';
+  resultsDiv.innerHTML = `
+    <h2>📊 Твои результаты</h2>
+    <ul>
+      <li>Упражнение 1 (Эмоции): <b>${ex1} / 6</b></li>
+      <li>Упражнение 2 (Местоимения + to be): <b>${ex2} / 7</b></li>
+      <li>Упражнение 3 (am / is / are): <b>${ex3} / 8</b></li>
+      <li>Упражнение 4 (Составь предложение): <b>${ex4} / 4</b></li>
+      <li>Упражнение 5 (Правописание): <b>${ex5} / 4</b></li>
+    </ul>
+    <div class="total">Общий счёт: ${total} / ${maxTotal}</div>
+    <div class="total" style="font-size:22px; margin-top:10px;">${message}</div>
+  `;
+
+  // Smoothly scroll to results
+  resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // --- Save results data and show modal ---
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+  const resultText = 
+`📊 Результаты домашки (Урок 1)
+🗓 Дата: ${dateStr}
+
+✏️ Упражнение 1 (Эмоции): ${ex1} / 6
+✏️ Упражнение 2 (Местоимения + to be): ${ex2} / 7
+✏️ Упражнение 3 (am / is / are): ${ex3} / 8
+✏️ Упражнение 4 (Составь предложение): ${ex4} / 4
+✏️ Упражнение 5 (Правописание): ${ex5} / 4
+
+🏆 ИТОГО: ${total} / ${maxTotal} (${Math.round(percentage)}%)
+${message}`;
+
+  // Save to window for copy function
+  window.lastResultText = resultText;
+
+  // Fill preview & show modal (with slight delay so student first sees scores)
+  document.getElementById('resultPreview').textContent = resultText;
+  setTimeout(() => {
+    document.getElementById('resultsModal').classList.add('active');
+  }, 800);
+});
+/* =========================================================
+   MODAL FUNCTIONS
+========================================================= */
+function closeModal() {
+  document.getElementById('resultsModal').classList.remove('active');
+}
+
+function copyResults() {
+  const text = window.lastResultText || '';
+  const btn = document.getElementById('copyBtn');
+
+  // Modern API
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showCopied(btn);
+    }).catch(() => fallbackCopy(text, btn));
+  } else {
+    fallbackCopy(text, btn);
+  }
+}
+
+function fallbackCopy(text, btn) {
+  // Fallback for older browsers / non-https
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    document.execCommand('copy');
+    showCopied(btn);
+  } catch (e) {
+    alert('Не получилось скопировать автоматически. Выдели текст вручную и скопируй (Ctrl+C).');
+  }
+  document.body.removeChild(textarea);
+}
+
+function showCopied(btn) {
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '✅ Скопировано!';
+  btn.classList.add('copied');
+  setTimeout(() => {
+    btn.innerHTML = originalText;
+    btn.classList.remove('copied');
+  }, 2000);
+}
+
+// Close modal on overlay click
+document.getElementById('resultsModal').addEventListener('click', (e) => {
+  if (e.target.id === 'resultsModal') closeModal();
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+<!-- ====================== MODAL: SEND RESULTS ====================== -->
+<div class="modal-overlay" id="resultsModal">
+  <div class="modal-window">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-emoji">📨</div>
+    <div class="modal-title">Отправь результат Дине!</div>
+    <div class="modal-text">
+      Скопируй свои результаты и отправь их <b>Дине во ВКонтакте</b>, чтобы она могла проверить твой прогресс. 💚
+    </div>
+    <div class="modal-result-preview" id="resultPreview"></div>
+    <div class="modal-buttons">
+      <button class="modal-btn copy" id="copyBtn" onclick="copyResults()">
+        📋 Скопировать всё
+      </button>
+      <a href="https://vk.com/elleestdina" target="_blank" class="modal-btn vk">
+        💬 Открыть ВК
+      </a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
