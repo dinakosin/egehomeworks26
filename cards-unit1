@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Unit 1: You and I — Flashcards</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root{
+    --bg:#0f1226; --bg2:#1a1f3d; --accent:#6c8cff; --accent2:#8b5cf6;
+    --good:#34d399; --card:#ffffff; --txt:#1f2233;
+  }
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:linear-gradient(160deg,var(--bg),var(--bg2));
+    color:#fff; min-height:100vh;
+    display:flex; flex-direction:column; align-items:center;
+    padding:14px; overflow-x:hidden;
+  }
+  .wrap{width:100%; max-width:460px; display:flex; flex-direction:column; gap:12px;}
+
+  header h1{
+    font-size:2.1rem; margin:4px 0 0; text-align:left; font-weight:700;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  header p{ margin:2px 0; text-align:left; font-size:.78rem; color:#aab1d6;}
+
+  /* Progress */
+  .progress-outer{
+    width:100%; height:12px; background:rgba(255,255,255,.12);
+    border-radius:20px; overflow:hidden;   margin-bottom:10px; 
+  }
+  .progress-inner{
+    height:100%; width:4%;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    border-radius:20px; transition:width .4s ease;
+  }
+  .counter{ text-align:left; font-size:.82rem; color:#cbd2f5; font-weight:600;  margin-bottom:24px; }
+
+  /* Card */
+  .scene{
+    width:100%; height:340px; perspective:1200px; margin-top:4px;
+  }
+  .card{
+    width:100%; height:100%; position:relative;
+    transform-style:preserve-3d; transition:transform .5s;
+    cursor:pointer;
+  }
+  .card.flipped{ transform:rotateY(180deg); }
+  .face{
+    position:absolute; inset:0; backface-visibility:hidden;
+    border-radius:22px; padding:22px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; gap:14px; box-shadow:0 18px 40px rgba(0,0,0,.45);
+  }
+  .front{ background:var(--card); color:var(--txt); }
+  .back{
+    background:linear-gradient(160deg,#6c8cff,#8b5cf6); color:#fff;
+    transform:rotateY(180deg);
+  }
+  .emoji{ font-size:3.4rem; line-height:1; }
+  .translation{ font-size:1.4rem; font-weight:700; }
+  .example{ font-size:1rem; color:#555; font-style:italic; line-height:1.4;}
+  .back .word{ font-size:2rem; font-weight:800; letter-spacing:.5px; }
+  .blank{ display:inline-block; min-width:60px; }
+  .qlabel{ font-size:.72rem; text-transform:uppercase; letter-spacing:1px; opacity:.6; }
+  .question{ font-size:1.25rem; font-weight:700; line-height:1.4; }
+  .answer{ font-size:1.5rem; font-weight:800; }
+  .tap-hint{ font-size:.7rem; opacity:.45; margin-top:6px; }
+  .motivation{ background:linear-gradient(160deg,#34d399,#059669)!important; color:#fff; }
+  .motivation .emoji{ font-size:4rem; }
+  .motivation .translation{ font-size:1.4rem; }
+
+  /* Controls */
+  .controls{ display:flex; gap:10px; justify-content:center; margin-top:24px;}
+  button{
+    flex:1; border:none; border-radius:14px; padding:13px 8px;
+    font-size:.92rem; font-weight:700; cursor:pointer; color:#fff;
+    background:rgba(255,255,255,.12); transition:transform .1s, background .2s;
+  }
+  button:active{ transform:scale(.95); }
+  button.primary{ background:linear-gradient(90deg,var(--accent),var(--accent2)); }
+  button.shuffle{ background:rgba(255,255,255,.16); }
+
+  /* Review screen */
+  .review{ display:none; flex-direction:column; gap:14px; }
+  .review h2{ text-align:right; font-size:1rem; margin:0; }
+  .review p{ text-align:right; font-size:.82rem; color:#aab1d6; margin:0; }
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .mini{
+    background:var(--card); color:var(--txt); border-radius:14px; padding:14px 8px;
+    text-align:center; min-height:92px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:6px; cursor:pointer;
+    border:3px solid transparent; transition:.15s;
+  }
+  .mini{
+    min-height:110px;        /* чуть выше, чтобы влезал текст */
+    padding:10px 6px;
+  }
+  .mini .me{ font-size:1.5rem; }
+  .mini .mw{
+    font-size:.7rem;          /* мельче текст */
+    font-weight:700;
+    line-height:1.15;
+    word-break:break-word;
+    hyphens:auto;
+    overflow:hidden;
+  }
+  .mini.selected{ border-color:#ef4444; transform:scale(.97); background:#ffe8e8; }
+
+  /* Final */
+  .final{ display:none; text-align:center; padding:30px 10px; }
+  .final .big{ font-size:3.5rem; }
+  .final h2{ font-size:1.4rem; margin:14px 0 6px; }
+  .final p{ color:#cbd2f5; font-size:.95rem; }
+
+  .modal-overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.6);
+  display:flex; align-items:center; justify-content:center; z-index:1000;
+}
+.modal-box{
+  background:#1e2340; color:#fff; padding:24px; border-radius:16px;
+  width:90%; max-width:480px; box-shadow:0 10px 40px rgba(0,0,0,.5);
+}
+.modal-box h3{ margin:0 0 14px; }
+#hardText{
+  width:100%; height:200px; resize:vertical; border-radius:10px;
+  padding:10px; font-size:.9rem; border:none; background:#11142a; color:#cbd2f5;
+}
+.modal-btns{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+.modal-btns button{
+  flex:1; padding:10px; border-radius:10px; border:none;
+  cursor:pointer; font-weight:600; min-width:120px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Unit 1: You and I</h1>
+    <p>Подготовка к тесту · Флешкарты</p>
+  </header>
+
+  <!-- STUDY -->
+  <div id="study">
+    <div class="progress-outer"><div class="progress-inner" id="bar"></div></div>
+    <div class="counter">Осталось повторить: <span id="counter">1/50</span></div>
+
+    <div class="scene">
+      <div class="card" id="card" onclick="flip()">
+        <div class="face front" id="front"></div>
+        <div class="face back" id="back"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="shuffle" onclick="shuffleDeck()">🔀 Перемешать</button>
+      <button onclick="prevCard()">← Назад</button>
+      <button class="primary" onclick="nextCard()">Дальше →</button>
+    </div>
+  </div>
+
+  <!-- REVIEW -->
+  <div class="review" id="review">
+    <h2>Отметь сложные карточки</h2>
+    <p>Нажми на те слова, которые запомнились плохо. Сет <span id="setNum">1</span></p>
+    <div class="grid" id="grid"></div>
+    <div class="controls">
+      <button class="primary" onclick="iKnowAll()">✅ Помню все</button>
+      <button onclick="nextReviewSet()">Дальше →</button>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="final" id="final">
+    <div class="big">🎉</div>
+    <h2>Отличная работа!</h2>
+    <p id="finalMsg"></p>
+    <div class="controls" style="margin-top:20px;">
+      <button class="primary" onclick="restart()">🔁 Начать заново</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ DATA ============ */
+// type: 'word'  -> emoji, translation, example(с пропуском _____), word
+// type: 'grammar' -> emoji, question, answer
+const baseCards = [
+  {type:'word', emoji:'👋', tr:'привет', word:'hello / hi', ex:'_____, my name is Tom.'},
+  {type:'word', emoji:'😊', tr:'до свидания', word:'bye', ex:'_____! See you tomorrow.'},
+  {type:'word', emoji:'🙋', tr:'я', word:'I', ex:'_____ am a student.'},
+  {type:'word', emoji:'👉', tr:'ты / вы', word:'you', ex:'_____ are my friend.'},
+  {type:'word', emoji:'👨', tr:'он', word:'he', ex:'_____ is a teacher.'},
+  {type:'word', emoji:'👩', tr:'она', word:'she', ex:'_____ is happy.'},
+  {type:'word', emoji:'📦', tr:'оно / это', word:'it', ex:'_____ is a dog.'},
+  {type:'word', emoji:'👥', tr:'мы', word:'we', ex:'_____ are a team.'},
+  {type:'word', emoji:'👨‍👩‍👧', tr:'они', word:'they', ex:'_____ are at home.'},
+  {type:'word', emoji:'📛', tr:'имя', word:'a name', ex:'What is your _____?'},
+  {type:'word', emoji:'🌍', tr:'страна', word:'a country', ex:'Which _____ are you from?'},
+  {type:'word', emoji:'👪', tr:'семья', word:'family', ex:'I love my _____.'},
+  {type:'word', emoji:'🧑‍🤝‍🧑', tr:'друг', word:'a friend', ex:'He is my best _____.'},
+  {type:'grammar', emoji:'❓', q:'Какая форма глагола "to be" используется для I?', a:'am'},
+  {type:'word', emoji:'👨‍🏫', tr:'учитель', word:'a teacher', ex:'My _____ is kind.'},
+  {type:'word', emoji:'🎓', tr:'студент / ученик', word:'a student', ex:'She is a good _____.'},
+  {type:'grammar', emoji:'❓', q:'Какая форма глагола "to be" используется для he/she/it:', a:'is'},
+  {type:'word', emoji:'🔢', tr:'число', word:'a number', ex:'What is your phone _____?'}, 
+  {type:'grammar', emoji:'❓', q:'Какая форма глагола "to be" используется для you/we/they:', a:'are'},
+  {type:'word', emoji:'🇬🇧', tr:'английский', word:'English', ex:'I speak _____.'},
+  {type:'word', emoji:'🗣️', tr:'говорить', word:'speak', ex:'Do you _____ English?'},
+  {type:'word', emoji:'👂', tr:'слушать', word:'listen', ex:'_____ to the teacher.'},
+  {type:'word', emoji:'👀', tr:'читать', word:'read', ex:'_____ the text, please.'},
+  {type:'word', emoji:'✍️', tr:'писать', word:'write', ex:'_____ your name here.'},
+  {type:'grammar', emoji:'❓', q:'Какая краткая форма у "I am"?:', a:"I'm"},
+  {type:'word', emoji:'🐶', tr:'собака', word:'a dog', ex:'My _____ is friendly.'},
+  {type:'word', emoji:'🐱', tr:'кошка', word:'a cat', ex:'The _____ is sleeping.'},
+  {type:'word', emoji:'☀️', tr:'хорошо', word:'good', ex:'I am _____, thank you.'},
+  {type:'grammar', emoji:'❓', q:'Вопрос: "Как тебя зовут?"', a:"What's your name?"},
+  {type:'word', emoji:'🙏', tr:'пожалуйста', word:'please', ex:'Sit down, _____.'},
+  {type:'word', emoji:'🤗', tr:'спасибо', word:'thank you', ex:'_____ very much!'},
+  {type:'word', emoji:'😄', tr:'счастливый', word:'happy', ex:'I am very _____ today.'},
+  {type:'word', emoji:'🌟', tr:'красивый', word:'beautiful', ex:'You have a _____ bag.'}, 
+    /* ============ СЛОВА ============ */
+  {type:'word', emoji:'🤔', tr:'я думаю', word:'I think', ex:'_____ you are kind.'},
+  {type:'word', emoji:'😳', tr:'застенчивый', word:'shy', ex:"She doesn't speak much, she is very _____."},
+  {type:'word', emoji:'😊', tr:'добрый', word:'kind', ex:'My teacher is friendly and _____.'},
+  {type:'word', emoji:'🎬', tr:'актёр', word:'an actor', ex:'He is _____ in a famous movie.'},
+  {type:'word', emoji:'🎭', tr:'актриса', word:'an actress', ex:'She is a talented _____.'},
+  {type:'word', emoji:'💃', tr:'модель', word:'a model', ex:'She works as _____ in Paris.'},
+  {type:'word', emoji:'👍', tr:'милый / приятный', word:'nice', ex:'You have a _____ smile.'},
+  {type:'word', emoji:'🔗', tr:'соединить / подобрать пару', word:'match', ex:'Please _____ the words and the pictures.'},
+  {type:'word', emoji:'🤝', tr:'Приятно познакомиться!', word:'Nice to meet you!', ex:'Hi, I am Anna. _____'},
+  {type:'word', emoji:'✅', tr:'готовый', word:'ready', ex:'I am _____ to start the lesson.'},
+  {type:'word', emoji:'❓', tr:'Ты готов(а)?', word:'Are you ready?', ex:'_____ We can begin now.'},
+  {type:'word', emoji:'😴', tr:'ленивый', word:'lazy', ex:'On Sundays I feel a little _____.'},
+  {type:'word', emoji:'🍔', tr:'голодный', word:'hungry', ex:'I want to eat, I am very _____.'},
+  {type:'word', emoji:'😠', tr:'злой / сердитый', word:'angry', ex:"Don't be _____ with me, please."},
+  {type:'word', emoji:'🤒', tr:'больной', word:'sick', ex:'I can\'t go to work today, I am _____.'},
+  {type:'word', emoji:'😌', tr:'расслабленный', word:'relaxed', ex:'After yoga I feel calm and _____.'},
+  {type:'word', emoji:'🥱', tr:'уставший', word:'tired', ex:'It was a long day, I am so _____.'},
+  {type:'word', emoji:'🌤️', tr:'погода', word:'weather', ex:'I love sunny _____.'},
+  {type:'word', emoji:'🌦️', tr:'Какая погода?', word:"How's the weather?", ex:'_____ Is it sunny today?'},
+  {type:'word', emoji:'💬', tr:'Сейчас ... (о погоде)', word:"It's ...", ex:'_____ very cold today.'},
+  {type:'word', emoji:'☀️', tr:'солнечно', word:'sunny', ex:"It's warm and _____ today."},
+  {type:'word', emoji:'💨', tr:'ветрено', word:'windy', ex:'Hold your hat, it is very _____.'},
+  {type:'word', emoji:'🌧️', tr:'дождливо', word:'rainy', ex:'Take an umbrella, it is _____.'},
+  {type:'word', emoji:'🎨', tr:'художник', word:'an artist', ex:'She paints pictures, she is _____.'},
+  {type:'word', emoji:'💼', tr:'офисный сотрудник', word:'an office worker', ex:'He works in a company, he is _____.'},
+  {type:'word', emoji:'🧠', tr:'психолог', word:'a psychologist', ex:'She helps people with feelings, she is _____.'},
+
+  /* ====== НАЦИОНАЛЬНОСТИ ====== */
+  {type:'word', emoji:'🇫🇷', tr:'французский', word:'French', ex:'He is from France, he is _____.'},
+  {type:'word', emoji:'🇮🇹', tr:'итальянский', word:'Italian', ex:'She is from Italy, she is _____.'},
+  {type:'word', emoji:'🇪🇸', tr:'испанский / испанец', word:'Spanish', ex:'He is from Spain, he is _____.'},
+  {type:'word', emoji:'🇨🇦', tr:'канадский / канадец', word:'Canadian', ex:'She is from Canada, she is _____.'},
+  {type:'word', emoji:'🇺🇸', tr:'американский / американец', word:'American', ex:'He is from the USA, he is _____.'},
+  {type:'word', emoji:'🇷🇺', tr:'русский', word:'Russian', ex:"I'm _____. I'm from Russia."},
+
+  /* ====== ФРАЗЫ-ШАБЛОНЫ ====== */
+  {type:'word', emoji:'🌍', tr:'(родом) из + страна', word:'is from Italy', ex:'She _____ (она из Италии).'},
+  {type:'word', emoji:'🙋‍♀️', tr:'Ты ...? — Да / Нет', word:'Are you …? — Yes, I am. / No, I’m not.', ex:'— Are you tired? — _____'},
+  {type:'word', emoji:'📛', tr:'Меня зовут ...', word:'My name is ...', ex:'_____ Anna.'},
+  {type:'word', emoji:'👩‍⚕️', tr:'Я (профессия)', word:"I'm a ...", ex:'_____ doctor.'},
+  {type:'word', emoji:'🏠', tr:'Я из ...', word:"I'm from ...", ex:'_____ Russia.'},
+  {type:'word', emoji:'🙂', tr:'Я ... (эмоция/состояние)', word:"I'm ...", ex:'_____ happy today.'},
+  {type:'word', emoji:'🎭', tr:'характер', word:'Character', ex:'Kind and shy describe your _____.'},
+  {type:'word', emoji:'😊', tr:'настроение', word:'Mood', ex:'Happy and angry describe your _____.'},
+
+  /* ============ ГРАММАТИКА ============ */
+  {type:'grammar', emoji:'⏰', q:"am/is/are — формы глагола 'to be' в каком времени?", a:'В настоящем — чтобы говорить про "сейчас".'},
+  {type:'grammar', emoji:'❓', q:'Когда в русском предложении нет глагола, какой глагол нужен в английском в 95% случаев?', a:'Нужен глагол to be (am / is / are).'},
+  {type:'grammar', emoji:'9️⃣', q:'Глагол to be используем, чтобы говорить о... Назови 9 случаев.', a:'1. имя\n2. эмоции\n3. возраст\n4. национальность\n5. местоположение\n6. состояние\n7. настроение\n8. откуда родом\n9. профессия / работа'},
+  {type:'grammar', emoji:'🚫', q:"Куда ставится 'not' в предложениях с to be?\nПример: I am a teacher. / I am happy.", a:'После to be:\nI am NOT a teacher. / I am NOT happy.'},
+  {type:'grammar', emoji:'🔊', q:'Как читаются слова: I, kind, tired, hi, nice?', a:"Со звуком 'ai' (ай)."},
+  {type:'grammar', emoji:'🔉', q:'Как читаются слова: information, profession, action?', a:"Со звуком '-шн-' в окончаниях -tion / -sion."},
+  {type:'grammar', emoji:'📚', q:'В какой части речи встречаются суффиксы -tion / -sion?', a:'В существительных (часто образованных от глаголов/прилагательных).'},
+  {type:'grammar', emoji:'1️⃣', q:'Что стоит на первом месте в вопросах в английском языке?', a:'Глагол (или вопросительное слово + глагол).'},
+  {type:'grammar', emoji:'✅', q:'Выбери вопрос:\n• am I a model\n• I am a model\n• I am not a model', a:'Am I a model?'},
+  {type:'grammar', emoji:'🌐', q:'Как образовать национальность от названия страны?', a:'Страна + -ian / -an / -n (Russia → Russian, Italy → Italian).'},
+  {type:'grammar', emoji:'❓', q:'Схема вопроса с глаголом to be?', a:'(Wh-) + Are/Is/Am + 🤪 (подлежащее) + остальное?\nНапр.: Where are you from?'},
+  {type:'grammar', emoji:'🧀', q:'Как читаются -ee- и -ea- в словах cheese, speak?', a:'Длинный звук [iː] — "и" с улыбкой.'},
+  {type:'grammar', emoji:'📝', q:'Стратегия заполнения пропусков в тексте (на слух)?', a:'Перевод знать не нужно:\n1. Просмотри текст, пойми примерно о чём он.\n2. Выдели слова до и после пропуска.\n3. Слушай и ПОКА слушаешь — пиши.\n4. Не услышала — догадывайся и всё равно пиши.'},
+];
+
+const motivations = [
+  {emoji:'🔥', text:'15 карточек позади! Ты молодец, продолжай!'},
+  {emoji:'🚀', text:'30 карточек! Super!'},
+  {emoji:'💪', text:'40 карточек! Уже больше половины — отличный темп!'},
+  {emoji:'🏆', text:'60 карточек! Ты знаешь больше с каждой карточкой!'},
+  {emoji:'🚀', text:'75 карточек! Финишная прямая, ты почти у цели!'}
+];
+const motivAfter = [15,30,40,60,75]; // после какой карточки показать
+
+/* ============ STATE ============ */
+let deck = [];
+let idx = 0;
+let isFlipped = false;
+let flipTime = 0;       // когда показали лицевую
+let viewTimerStart = 0;
+let autoTimer = null;
+let hardCards = [];     // отмеченные сложные
+let reviewSets = [];
+let curReviewSet = 0;
+
+const front = document.getElementById('front');
+const back  = document.getElementById('back');
+const cardEl= document.getElementById('card');
+const bar   = document.getElementById('bar');
+const counterEl = document.getElementById('counter');
+
+/* ============ INIT ============ */
+function buildDeck(){
+  // вставляем мотивационные карточки в нужные позиции
+  let d = baseCards.map((c,i)=>({...c, _orig:i, longViewed:false}));
+  return d;
+}
+
+function init(){
+  deck = buildDeck();
+  idx = 0; hardCards=[]; isFlipped=false;
+  document.getElementById('study').style.display='block';
+  document.getElementById('review').style.display='none';
+  document.getElementById('final').style.display='none';
+  showCard();
+}
+
+/* ============ RENDER ============ */
+function renderFace(c){
+  if(c.type==='motivation'){
+    front.className='face front motivation';
+    back.className='face back motivation';
+    front.innerHTML = `<div class="emoji">${c.emoji}</div><div class="translation">${c.text}</div><div class="tap-hint">нажми «Дальше»</div>`;
+    back.innerHTML = front.innerHTML;
+    return;
+  }
+  front.className='face front';
+  back.className='face back';
+  if(c.type==='word'){
+    const ex = c.ex.replace('_____', '<span class="blank">_____</span>');
+    front.innerHTML = `
+      <div class="emoji">${c.emoji}</div>
+      <div class="translation">${c.tr}</div>
+      <div class="example">${ex}</div>
+      <div class="tap-hint"></div>`;
+    back.innerHTML = `
+      <div class="emoji">${c.emoji}</div>
+      <div class="word">${c.word}</div>`;
+  } else { // grammar
+    front.innerHTML = `
+      <div class="qlabel">грамматика</div>
+      <div class="emoji">${c.emoji}</div>
+      <div class="question">${c.q}</div>
+      <div class="tap-hint">нажми, чтобы увидеть ответ</div>`;
+    back.innerHTML = `
+      <div class="qlabel"></div>
+      <div class="emoji">✅</div>
+      <div class="answer">${c.a}</div>`;
+  }
+}
+
+function showCard(){
+  if(idx >= deck.length){ startReview(); return; }
+  clearTimeout(autoTimer);
+  isFlipped=false;
+  cardEl.classList.remove('flipped');
+  const c = deck[idx];
+  renderFace(c);
+
+  // counter & progress
+  const total = deck.length;
+  counterEl.textContent = `${idx+1}/${total}`;
+  let pct = Math.max(4, Math.round(((idx)/total)*100));
+  if(idx===0) pct=4;
+  bar.style.width = pct + '%';
+
+  viewTimerStart = Date.now();
+}
+
+/* ============ FLIP / NAV ============ */
+function flip(){
+  const c = deck[idx];
+  if(c.type==='motivation') return;
+  if(!isFlipped){
+    // считаем, сколько смотрел на лицевую сторону
+    const elapsed = (Date.now()-viewTimerStart)/1000;
+    if(elapsed > 15 && !c._reinserted){
+      // показать ещё раз через 5 карточек
+      c._reinserted = true;
+      const insertPos = Math.min(idx+5, deck.length);
+      deck.splice(insertPos, 0, {...c, _reinserted:true});
+    }
+    isFlipped=true;
+    cardEl.classList.add('flipped');
+    // авто-переход через 30 сек
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(()=> nextCard(), 30000);
+  } else {
+    isFlipped=false;
+    cardEl.classList.remove('flipped');
+    clearTimeout(autoTimer);
+  }
+}
+
+function nextCard(){
+  clearTimeout(autoTimer);
+  idx++;
+  if(idx >= deck.length){ startReview(); return; }
+  showCard();
+}
+
+function prevCard(){
+  clearTimeout(autoTimer);
+  if(idx>0){ idx--; showCard(); }
+}
+
+function shuffleDeck(){
+  clearTimeout(autoTimer);
+  const rest = deck.slice(idx); // перемешиваем оставшиеся
+  for(let i=rest.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [rest[i],rest[j]]=[rest[j],rest[i]];
+  }
+  deck = deck.slice(0,idx).concat(rest);
+  showCard();
+}
+
+/* вставляем мотивационные карточки на лету по достижению позиций */
+const motivShown = {};
+const _origNext = nextCard;
+nextCard = function(){
+  // проверяем, надо ли вставить мотивацию
+  for(let k=0;k<motivAfter.length;k++){
+    const pos = motivAfter[k];
+    if(!motivShown[pos] && (idx+1)===pos && pos<deck.length){
+      motivShown[pos]=true;
+      deck.splice(idx+1,0,{type:'motivation', emoji:motivations[k].emoji, text:motivations[k].text});
+    }
+  }
+  _origNext();
+};
+
+/* ============ REVIEW (sets of 8) ============ */
+function startReview(){
+  document.getElementById('study').style.display='none';
+  bar.style.width='100%';
+  // собираем только обычные карточки (без мотивации, без дублей)
+  const seen = new Set();
+  const all = deck.filter(c=>{
+    if(c.type==='motivation') return false;
+    const key = c.word||c.q;
+    if(seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+  // разбиваем по 8
+  reviewSets=[];
+  for(let i=0;i<all.length;i+=8) reviewSets.push(all.slice(i,i+8));
+  curReviewSet=0;
+  document.getElementById('review').style.display='flex';
+  renderReviewSet();
+}
+
+function renderReviewSet(){
+  if(curReviewSet>=reviewSets.length){ finish(); return; }
+  document.getElementById('setNum').textContent = (curReviewSet+1)+'/'+reviewSets.length;
+  const grid = document.getElementById('grid');
+  grid.innerHTML='';
+  reviewSets[curReviewSet].forEach((c)=>{
+    const div=document.createElement('div');
+    div.className='mini';
+    const label = c.type==='word' ? c.word : c.q;
+    div.innerHTML=`<div class="me">${c.emoji}</div><div class="mw">${label}</div>`;
+    div.onclick=()=>{
+      div.classList.toggle('selected');
+      const key=c.word||c.q;
+      if(div.classList.contains('selected')) hardCards.push(key);
+      else hardCards=hardCards.filter(h=>h!==key);
+    };
+    grid.appendChild(div);
+  });
+}
+
+function nextReviewSet(){
+  curReviewSet++;
+  renderReviewSet();
+}
+function iKnowAll(){
+  // ничего не помечаем в этом сете -> просто дальше
+  nextReviewSet();
+}
+
+/* ============ FINAL ============ */
+function finish(){
+  document.getElementById('review').style.display='none';
+  const f=document.getElementById('final');
+  f.style.display='block';
+  const uniqueHard = [...new Set(hardCards)];
+  let msg;
+  if(uniqueHard.length===0){
+    msg = 'Ты не отметил ни одной сложной карточки — значит, ты отлично всё запомнил! Ты готов к тесту по Unit 1! 🌟';
+  } else {
+    msg = `Ты отметил ${uniqueHard.length} сложн${uniqueHard.length===1?'ую карточку':'ых карточек'}. Повтори их ещё раз перед тестом — и успех гарантирован! Ты справишься! 💪`;
+    // показываем pop-up со списком сложных карточек
+    showHardModal(uniqueHard);
+  }
+  document.getElementById('finalMsg').textContent = msg;
+}
+
+
+/* ============ START ============ */
+init();
+</script>
+<div id="hardModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <h3>Сложные карточки</h3>
+    <textarea id="hardText" readonly></textarea>
+    <div class="modal-btns">
+      <button id="copyHard">📋 Скопировать</button>
+      <button id="repeatHard">🔁 Повторить только сложные</button>
+      <button id="closeModal">Закрыть</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
