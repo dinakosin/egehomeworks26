@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Homework — Pre-A1</title>
+<style>
+:root{
+  --bg:#fff8f0;--c1:#ff6b6b;--c2:#4ecdc4;--c3:#ffd93d;--c4:#6a89cc;
+  --dark:#2d3436;--shadow:0 8px 24px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--dark);line-height:1.55;padding:0 0 60px;}
+header{background:linear-gradient(135deg,var(--c1),var(--c4));color:#fff;text-align:center;padding:28px 16px;border-radius:0 0 24px 24px;box-shadow:var(--shadow);}
+header h1{margin:0;font-size:1.6rem;}
+header p{margin:6px 0 0;opacity:.95;font-size:.95rem;}
+.wrap{max-width:760px;margin:0 auto;padding:0 14px;}
+.task{background:#fff;border-radius:20px;padding:18px 16px;margin:22px 0;box-shadow:var(--shadow);}
+.task h2{margin:0 0 12px;font-size:1.2rem;display:flex;align-items:center;gap:10px;}
+.badge{background:var(--c3);color:var(--dark);font-weight:700;width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:1rem;border-radius:50%;}
+.hint{font-size:.9rem;color:#666;margin:6px 0 12px;}
+.q{margin:14px 0;}
+.q b{color:var(--c1);}
+textarea,input[type=text]{width:100%;border:2px solid #eee;border-radius:12px;padding:10px;font-size:1rem;font-family:inherit;margin-top:6px;background:#fafafa;}
+textarea:focus,input:focus{outline:none;border-color:var(--c2);}
+textarea{min-height:54px;resize:vertical;}
+.audio-link,.vk-link{display:inline-block;background:var(--c2);color:#fff;text-decoration:none;padding:10px 18px;border-radius:30px;font-weight:600;margin:6px 0;}
+.btn{border:none;border-radius:30px;padding:12px 22px;font-size:1rem;font-weight:700;cursor:pointer;color:#fff;background:var(--c1);box-shadow:var(--shadow);transition:transform .1s;}
+.btn:active{transform:scale(.96);}
+.btn.alt{background:var(--c4);}
+.btn.green{background:var(--c2);}
+.btn.yellow{background:var(--c3);color:var(--dark);}
+#fcArea{text-align:center;}
+.scene{perspective:1000px;width:100%;max-width:340px;margin:10px auto;height:240px;}
+.card{width:100%;height:100%;position:relative;transition:transform .5s;transform-style:preserve-3d;cursor:pointer;}
+.card.flipped{transform:rotateY(180deg);}
+.face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;text-align:center;box-shadow:var(--shadow);}
+.front{background:linear-gradient(135deg,#fff,#fff3e0);}
+.back{background:linear-gradient(135deg,var(--c2),var(--c4));color:#fff;transform:rotateY(180deg);}
+.emoji{font-size:3rem;margin-bottom:6px;}
+.ru{font-size:1.15rem;font-weight:600;color:var(--c1);}
+.ex{font-size:1rem;margin-top:10px;color:#555;}
+.word{font-size:1.7rem;font-weight:800;}
+.fcControls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px;}
+.fcControls .btn{padding:10px 16px;font-size:.92rem;}
+.counter{font-size:.85rem;color:#888;margin-top:6px;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:999;padding:16px;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:24px;padding:24px 20px;max-width:520px;width:100%;text-align:center;box-shadow:var(--shadow);max-height:90vh;overflow:auto;}
+.modal h2{margin-top:0;color:var(--c1);}
+.modal .tip{background:#fff3e0;border-radius:14px;padding:12px;margin:14px 0;font-size:.95rem;text-align:left;}
+#resultBox{width:100%;min-height:200px;border:2px solid #eee;border-radius:12px;padding:10px;font-family:monospace;font-size:.85rem;background:#fafafa;}
+.match-row{display:flex;gap:8px;align-items:center;margin:8px 0;flex-wrap:wrap;}
+.match-row span{flex:1;min-width:120px;}
+.match-row select{border:2px solid #eee;border-radius:10px;padding:8px;font-size:.95rem;background:#fafafa;}
+.person{background:#fff3e0;border-radius:12px;padding:10px;margin:10px 0;}
+.person b{color:var(--c4);}
+.bigBtn{display:block;width:100%;margin-top:18px;}
+footer{text-align:center;margin-top:30px;color:#999;font-size:.85rem;}
+.balloon{position:fixed;bottom:-120px;width:40px;height:52px;border-radius:50%;z-index:1000;animation:fly 4s ease-in forwards;}
+@keyframes fly{to{bottom:110%;opacity:0;}}
+.dialogue{
+  background:#fff;
+  border:2px solid var(--c2);
+  border-radius:16px;
+  padding:14px 16px;
+  margin:14px 0;
+  box-shadow:var(--shadow);
+}
+.dialogue p{
+  margin:0 0 10px;
+  font-size:.97rem;
+}
+.dialogue p:last-child{margin-bottom:0;}
+.dialogue .sp{
+  font-weight:700;
+  color:var(--c1);
+  margin-right:4px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📘 Homework — Pre-A1</h1>
+  <p>Do all tasks, then send your results to the chat!</p>
+</header>
+
+<div class="wrap">
+
+<div class="task">
+  <h2><span class="badge">01</span> Flashcards 🃏</h2>
+  <p class="hint">Нажми на карточку, чтобы перевернуть. «Дальше» — следующая, «Пропустить» — позже, «Перемешать» — новый порядок.</p>
+  <div id="fcArea">
+    <div class="scene">
+      <div class="card" id="card">
+        <div class="face front">
+          <div class="emoji" id="fEmoji"></div>
+          <div class="ru" id="fRu"></div>
+          <div class="ex" id="fEx"></div>
+        </div>
+        <div class="face back">
+          <div class="emoji" id="bEmoji"></div>
+          <div class="word" id="bWord"></div>
+        </div>
+      </div>
+    </div>
+    <div class="counter" id="fcCounter"></div>
+    <div class="fcControls">
+      <button class="btn green" id="btnNext">Дальше ➡️</button>
+      <button class="btn yellow" id="btnSkip">Пропустить ⏭️</button>
+      <button class="btn alt" id="btnShuffle">Перемешать 🔀</button>
+    </div>
+  </div>
+</div>
+
+<div class="task">
+  <h2><span class="badge">02</span> Dialogue & Listening 🎧</h2>
+  <p class="hint">Послушай аудио и прочитай диалог. Затем исправь предложения и перепиши их с правильными местоимениями.</p>
+  <a class="audio-link" href="https://disk.yandex.ru/d/rV9bk5paaPVsDw" target="_blank">▶️ Открыть аудио</a>
+  <p style="font-weight:600;margin-top:14px;">Correct the sentences and rewrite them with the correct subject pronouns.</p>
+  <div class="q"><b>1.</b> Carlos, Fatma and Sanjit are on the Face-to-face app. <i>(Let's talk!)</i><br><small>Пример: ➡️ No, they aren't. They're on the Let's talk! app.</small></div>
+  <div class="q"><b>2.</b> My family and I are from Brazil. <i>(France)</i><input type="text" data-q="2.2"></div>
+  <div class="q"><b>3.</b> Carlos is American. <i>(Argentinian)</i><input type="text" data-q="2.3"></div>
+  <div class="q"><b>4.</b> Kathy's phone number is 07756759941. <i>(0775679888)</i><input type="text" data-q="2.4"></div>
+  <div class="q"><b>5.</b> Sanjit is a Greek name. <i>(Indian)</i><input type="text" data-q="2.5"></div>
+  <div class="q"><b>6.</b> You and your friend are sixteen. <i>(fifteen)</i><input type="text" data-q="2.6"></div>
+  <div class="q"><b>7.</b> I'm a teacher. <i>(student)</i><input type="text" data-q="2.7"></div>
+</div>
+<div class="task">
+  <h2><span class="badge">02</span> Dialogue & Listening 🎧</h2>
+  <p class="hint">Послушай аудио и прочитай диалог. Затем исправь предложения и перепиши их с правильными местоимениями.</p>
+  <a class="audio-link" href="https://disk.yandex.ru/d/rV9bk5paaPVsDw" target="_blank">▶️ Открыть аудио</a>
+
+  <!-- 👇 ДИАЛОГ В РАМОЧКЕ -->
+  <div class="dialogue">
+    <p><span class="sp">Kathy:</span> Welcome to 'Let's talk!' English video chat. I'm your teacher, Kathy. I'm from Scotland and I'm twenty-five.</p>
+    <p><span class="sp">Carlos:</span> Good morning, Kathy! I'm Carlos and I'm Argentinian.</p>
+    <p><span class="sp">Kathy:</span> Hello Carlos. Nice to meet you! How old are you?</p>
+    <p><span class="sp">Carlos:</span> I'm eighteen.</p>
+    <p><span class="sp">Fatma:</span> Hi guys! My name's Fatma and I'm seventeen.</p>
+    <p><span class="sp">Kathy:</span> Sorry, can you spell your name, please?</p>
+    <p><span class="sp">Fatma:</span> Yes, it's F-a-t-m-a.</p>
+    <p><span class="sp">Kathy:</span> Welcome, Fatma! Where are you from?</p>
+    <p><span class="sp">Fatma:</span> I'm from Istanbul. I'm Turkish.</p>
+    <p><span class="sp">Sanjit:</span> Hello everyone! Pleased to meet you! I'm Sanjit. That's S-a-n-j-i-t. It's an Indian name.</p>
+    <p><span class="sp">Kathy:</span> Hello Sanjit. Are you from India?</p>
+    <p><span class="sp">Sanjit:</span> No, I'm not. I'm French, but my parents are from India.</p>
+    <p><span class="sp">Carlos:</span> Kathy, what's your email address?</p>
+    <p><span class="sp">Kathy:</span> Good question! It's kathyclaire@letstalk.co.uk.</p>
+  </div>
+
+  <p style="font-weight:600;margin-top:14px;">Correct the sentences and rewrite them with the correct subject pronouns.</p>
+  <div class="q"><b>1.</b> Carlos, Fatma and Sanjit are on the Face-to-face app. <i>(Let's talk!)</i><br><small>Пример: ➡️ No, they aren't. They're on the Let's talk! app.</small></div>
+  <div class="q"><b>2.</b> My family and I are from Brazil. <i>(France)</i><input type="text" data-q="2.2"></div>
+  <div class="q"><b>3.</b> Carlos is American. <i>(Argentinian)</i><input type="text" data-q="2.3"></div>
+  <div class="q"><b>4.</b> Kathy's phone number is 07756759941. <i>(0775679888)</i><input type="text" data-q="2.4"></div>
+  <div class="q"><b>5.</b> Sanjit is a Greek name. <i>(Indian)</i><input type="text" data-q="2.5"></div>
+  <div class="q"><b>6.</b> You and your friend are sixteen. <i>(fifteen)</i><input type="text" data-q="2.6"></div>
+  <div class="q"><b>7.</b> I'm a teacher. <i>(student)</i><input type="text" data-q="2.7"></div>
+</div>
+
+<div class="task">
+  <h2><span class="badge">03</span> Correct the mistakes ✏️</h2>
+  <div class="q"><b>1.</b> Elena isn't a police officer. She a businesswoman.<input type="text" data-q="3.1"></div>
+  <div class="q"><b>2.</b> A: Is Anya an actress? B: Yes, she's.<input type="text" data-q="3.2"></div>
+  <div class="q"><b>3.</b> The Eiffel Tower isn't in Rome. She's in Paris.<input type="text" data-q="3.3"></div>
+  <div class="q"><b>4.</b> He is a taxi driver?<input type="text" data-q="3.4"></div>
+  <div class="q"><b>5.</b> Where Diego is from?<input type="text" data-q="3.5"></div>
+  <div class="q"><b>6.</b> He are from South Korea.<input type="text" data-q="3.6"></div>
+  <div class="q"><b>7.</b> A: Is Laura a digital designer? B: Yes, she are.<input type="text" data-q="3.7"></div>
+  <div class="q"><b>8.</b> What lapiz in English?<input type="text" data-q="3.8"></div>
+</div>
+
+<div class="task">
+  <h2><span class="badge">04</span> Use the prompts & <i>be</i> 🧩</h2>
+  <p class="hint">Use contractions where possible.</p>
+  <div class="q"><b>1.</b> she / from / Beijing. <small>(Пример: She's from Beijing.)</small></div>
+  <div class="q"><b>2.</b> he / a businessman.<input type="text" data-q="4.2"></div>
+  <div class="q"><b>3.</b> it / not / in London.<input type="text" data-q="4.3"></div>
+  <div class="q"><b>4.</b> where / Sophie / from?<input type="text" data-q="4.4"></div>
+  <div class="q"><b>5.</b> he / a teacher?<input type="text" data-q="4.5"></div>
+  <div class="q"><b>6.</b> what / Jack's job?<input type="text" data-q="4.6"></div>
+  <div class="q"><b>7.</b> she / not / an office worker. She / a shop assistant.<input type="text" data-q="4.7"></div>
+  <div class="q"><b>8.</b> the Colosseum / not / in Milan. It / in Rome.<input type="text" data-q="4.8"></div>
+</div>
+
+<div class="task">
+  <h2><span class="badge">05</span> Match the phrases 🔗</h2>
+  <p class="hint">Выбери, о чём можно говорить с помощью каждой фразы.</p>
+  <div id="matchArea"></div>
+</div>
+
+<div class="task">
+  <h2><span class="badge">06</span> Describe the people 🗣️</h2>
+  <p class="hint">Look at the names these people. Do you know who they are? Google them. Write about their name, job, country, nationality, emotions, character or mood.</p>
+  <p style="font-style:italic;background:#fff3e0;padding:10px;border-radius:12px;">Example: His name is Donald. He's a president. He's American. He's not beautiful, he's angry and funny.</p>
+  <div class="person"><b>Taylor Swift</b><textarea data-q="6.1" placeholder="Write here..."></textarea></div>
+  <div class="person"><b>Vanya Dmitrienko</b><textarea data-q="6.2" placeholder="Write here..."></textarea></div>
+  <div class="person"><b>Daniel Vegas & Gleb Kalyuzhny</b><textarea data-q="6.3" placeholder="Write here..."></textarea></div>
+</div>
+
+<button class="btn bigBtn" style="font-size:1.15rem;padding:16px;" id="btnFinish">✅ Закончить и получить результат</button>
+
+<footer>Made with ❤️ for my student</footer>
+</div>
+
+<div class="overlay" id="finalOverlay">
+  <div class="modal">
+    <h2>🎉 Good job!</h2>
+    <p>Скопируй и отправь свой результат в наш чат!</p>
+    <textarea id="resultBox" readonly></textarea>
+    <button class="btn green bigBtn" id="btnCopy">📋 Copy all</button>
+    <a class="vk-link" href="https://vk.com" target="_blank" style="display:block;margin-top:12px;">🔗 Перейти в наш ВК</a>
+  </div>
+</div>
+
+<div class="overlay" id="fcDone">
+  <div class="modal">
+    <h2>🌟 Отлично!</h2>
+    <p>Ты прошла все карточки! Молодец!</p>
+    <div class="tip">📝 <b>Совет:</b> сейчас возьми листочек и напиши туда всё, что помнишь. Потом просмотри карточки ещё раз и добавь на листочек то, что не вспомнила в первый раз.</div>
+    <button class="btn yellow bigBtn" id="btnHurray">🎈 Ура!</button>
+    <button class="btn alt bigBtn" id="btnRestart">🔁 Начать заново</button>
+  </div>
+</div>
+
+<script>
+var WORDS=[
+ {e:"🍽️",ru:"голодный",ex:"I'm so ___, let's eat!",w:"hungry"},
+ {e:"🎭",ru:"актриса",ex:"She is a famous ___.",w:"an actress"},
+ {e:"🎬",ru:"актёр",ex:"He is a famous ___.",w:"an actor"},
+ {e:"👩‍🏫",ru:"учитель",ex:"My ___ is very kind.",w:"a teacher"},
+ {e:"🧑‍🎓",ru:"студент / ученик",ex:"I am a ___.",w:"a student"},
+ {e:"🇷🇺",ru:"из России",ex:"I'm ___ Russia.",w:"from Russia"},
+ {e:"🇷🇺",ru:"русский (национальность)",ex:"She is ___.",w:"Russian"},
+ {e:"🇮🇹",ru:"итальянский (национальность)",ex:"He is ___.",w:"Italian"},
+ {e:"🇮🇹",ru:"из Италии",ex:"We are ___ Italy.",w:"from Italy"},
+ {e:"🙋",ru:"Меня зовут…",ex:"___ Anna.",w:"My name is…"},
+ {e:"☕",ru:"в кафе",ex:"We are ___.",w:"in a cafe"},
+ {e:"😴",ru:"усталый",ex:"I'm ___ today.",w:"tired"},
+ {e:"😌",ru:"расслабленный",ex:"I feel ___ now.",w:"relaxed"},
+ {e:"🌍",ru:"страна",ex:"Italy is a beautiful ___.",w:"country"},
+ {e:"💼",ru:"работа / профессия",ex:"What's your ___?",w:"job"},
+ {e:"🪪",ru:"национальность",ex:"What's your ___?",w:"nationality"},
+ {e:"🔤",ru:"Как читаются окончания -tion и -sion?",ex:"informa-tion → ___",w:"шн (sh-n)"},
+ {e:"👩‍🏫",ru:"учитель",ex:"She is ___.",w:"a teacher"},
+ {e:"❓",ru:"Ты …? (вопрос)",ex:"___ a student?",w:"Are you …?"},
+ {e:"❓",ru:"Они …? (вопрос)",ex:"___ from Italy?",w:"Are they …?"},
+ {e:"👥",ru:"мы",ex:"___ are friends.",w:"We"},
+ {e:"🫵",ru:"ты / вы",ex:"___ are nice.",w:"You"},
+ {e:"👨‍👩‍👧",ru:"они",ex:"___ are happy.",w:"They"},
+ {e:"👨",ru:"он",ex:"___ is a doctor.",w:"He"},
+ {e:"👩",ru:"она",ex:"___ is a teacher.",w:"She"},
+ {e:"📦",ru:"оно / это",ex:"___ is in London.",w:"It"},
+ {e:"🙋‍♀️",ru:"я",ex:"___ am a student.",w:"I"},
+ {e:"🔡",ru:"Формы глагола to be (наст. время)",ex:"am, ___, ___",w:"am, is, are"},
+ {e:"❔",ru:"Что стоит на первом месте в вопросах?",ex:"___ ... ?",w:"глагол (или wh- слово + глагол)"},
+ {e:"👨‍👩‍👧‍👦",ru:"родители",ex:"My ___ are kind.",w:"parents"},
+ {e:"👵",ru:"бабушка",ex:"My ___ is nice.",w:"grandma"},
+ {e:"👴",ru:"дедушка",ex:"My ___ is old.",w:"grandpa"},
+ {e:"👧",ru:"сестра",ex:"My ___ is ten.",w:"sister"},
+ {e:"🧒",ru:"дети",ex:"They have two ___.",w:"children"},
+ {e:"✌️",ru:"оба",ex:"We are ___ happy.",w:"both"},
+ {e:"💬",ru:'Как ответить на "Are you a teacher?"',ex:"___ / ___",w:"Yes, I am / No, I'm not"}
+];
+
+var deck=[],current=0,viewStart=0,isFront=true,backTimer=null;
+
+function buildDeck(){
+  deck=WORDS.map(function(w,i){return {e:w.e,ru:w.ru,ex:w.ex,w:w.w,done:false,slow:false,id:i};});
+  current=0;isFront=true;
+}
+function showCard(){
+  var safe=0;
+  while(deck[current]&&deck[current].done&&safe<deck.length){current=(current+1)%deck.length;safe++;}
+  var left=deck.filter(function(c){return !c.done;}).length;
+  if(left===0){document.getElementById('fcDone').classList.add('show');return;}
+  var c=deck[current];
+  document.getElementById('fEmoji').textContent=c.e;
+  document.getElementById('fRu').textContent=c.ru;
+  document.getElementById('fEx').textContent=c.ex;
+  document.getElementById('bEmoji').textContent=c.e;
+  document.getElementById('bWord').textContent=c.w;
+  document.getElementById('card').classList.remove('flipped');
+  isFront=true;viewStart=Date.now();
+  document.getElementById('fcCounter').textContent="Осталось карточек: "+left;
+}
+function flipCard(){
+  var card=document.getElementById('card');
+  if(isFront){
+    var secs=(Date.now()-viewStart)/1000;
+    card.classList.add('flipped');isFront=false;viewStart=Date.now();
+    deck[current].slow=(secs>15);
+    clearTimeout(backTimer);
+    backTimer=setTimeout(function(){if(!isFront)nextCard();},20000);
+  }
+}
+function nextCard(){
+  clearTimeout(backTimer);
+  if(!isFront){deck[current].done=!deck[current].slow;}
+  current=(current+1)%deck.length;showCard();
+}
+function skipCard(){clearTimeout(backTimer);current=(current+1)%deck.length;showCard();}
+function shuffleDeck(){
+  clearTimeout(backTimer);
+  for(var i=deck.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=deck[i];deck[i]=deck[j];deck[j]=t;}
+  current=0;showCard();
+}
+function restartFC(){document.getElementById('fcDone').classList.remove('show');buildDeck();shuffleDeck();}
+function hurray(){
+  var colors=['#ff6b6b','#4ecdc4','#ffd93d','#6a89cc','#ff9ff3'];
+  for(var i=0;i<30;i++){
+    var b=document.createElement('div');
+    b.className='balloon';
+    b.style.left=(Math.random()*100)+'%';
+    b.style.background=colors[Math.floor(Math.random()*colors.length)];
+    b.style.animationDuration=(3+Math.random()*2)+'s';
+    document.body.appendChild(b);
+    (function(el){setTimeout(function(){el.remove();},5000);})(b);
+  }
+}
+
+var MATCH_PHRASES=["My name is ...","I'm a ...","I'm from ...","I'm ...","They are ...","He's a ...","She is from ...","His (его) name is ...","Her (ее) name is ...","Their (их) names are ..."];
+var MATCH_OPTIONS=["— выбери —","Name","Job","Country","Emotions & Mood & Character"];
+function buildMatch(){
+  var area=document.getElementById('matchArea');
+  MATCH_PHRASES.forEach(function(p,i){
+    var row=document.createElement('div');row.className='match-row';
+    var span=document.createElement('span');span.textContent=(i+1)+". "+p;
+    var sel=document.createElement('select');sel.setAttribute('data-q','5.'+(i+1));
+    MATCH_OPTIONS.forEach(function(o){
+      var opt=document.createElement('option');
+      opt.value=(o.charAt(0)==='—'?'':o);opt.textContent=o;sel.appendChild(opt);
+    });
+    row.appendChild(span);row.appendChild(sel);area.appendChild(row);
+  });
+}
+
+function finish(){
+  var txt="📘 МОЁ ДОМАШНЕЕ ЗАДАНИЕ (Pre-A1)\n================================\n\n";
+  txt+="📝 ЗАДАНИЕ 02 — Correct & rewrite:\n";
+  for(var i=2;i<=7;i++){
+    var e2=document.querySelector('[data-q="2.'+i+'"]');
+    txt+=i+") "+(e2&&e2.value?e2.value:"—")+"\n";
+  }
+  txt+="\n";
+
+  txt+="✏️ ЗАДАНИЕ 03 — Correct the mistakes:\n";
+  for(var i=1;i<=8;i++){
+    var e3=document.querySelector('[data-q="3.'+i+'"]');
+    txt+=i+") "+(e3&&e3.value?e3.value:"—")+"\n";
+  }
+  txt+="\n";
+
+  txt+="🧩 ЗАДАНИЕ 04 — Prompts & be:\n";
+  for(var i=2;i<=8;i++){
+    var e4=document.querySelector('[data-q="4.'+i+'"]');
+    txt+=i+") "+(e4&&e4.value?e4.value:"—")+"\n";
+  }
+  txt+="\n";
+
+  txt+="🔗 ЗАДАНИЕ 05 — Match:\n";
+  MATCH_PHRASES.forEach(function(p,i){
+    var e5=document.querySelector('[data-q="5.'+(i+1)+'"]');
+    txt+=(i+1)+") "+p+" → "+(e5&&e5.value?e5.value:"—")+"\n";
+  });
+  txt+="\n";
+
+  txt+="🗣️ ЗАДАНИЕ 06 — Describe the people:\n";
+  for(var i=1;i<=3;i++){
+    var e6=document.querySelector('[data-q="6.'+i+'"]');
+    txt+="Person "+i+": "+(e6&&e6.value?e6.value:"—")+"\n";
+  }
+  txt+="\n================================\nGood job! 🎉";
+
+  document.getElementById('resultBox').value=txt;
+  document.getElementById('finalOverlay').classList.add('show');
+}
+
+function copyAll(){
+  var box=document.getElementById('resultBox');
+  box.removeAttribute('readonly');
+  box.focus();
+  box.select();
+  box.setSelectionRange(0,99999);
+  var done=function(){
+    box.setAttribute('readonly','readonly');
+    alert("Скопировано! ✅ Теперь отправь это в наш чат 💬");
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(box.value).then(done).catch(function(){
+      try{document.execCommand('copy');}catch(e){}
+      done();
+    });
+  }else{
+    try{document.execCommand('copy');}catch(e){}
+    done();
+  }
+}
+
+/* ---------- ПРИВЯЗКА КНОПОК ---------- */
+document.getElementById('card').addEventListener('click',flipCard);
+document.getElementById('btnNext').addEventListener('click',nextCard);
+document.getElementById('btnSkip').addEventListener('click',skipCard);
+document.getElementById('btnShuffle').addEventListener('click',shuffleDeck);
+document.getElementById('btnHurray').addEventListener('click',hurray);
+document.getElementById('btnRestart').addEventListener('click',restartFC);
+document.getElementById('btnFinish').addEventListener('click',finish);
+document.getElementById('btnCopy').addEventListener('click',copyAll);
+
+/* ---------- СТАРТ ---------- */
+buildDeck();
+showCard();
+buildMatch();
+</script>
+</body>
+</html>02
