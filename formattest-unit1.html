@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ЕГЭ 2026 — Мини-экзамен</title>
+<style>
+  *{box-sizing:border-box;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:linear-gradient(160deg,#eaf4fb,#f3f9fe);
+    color:#27384a; min-height:100vh; margin:0; padding:24px;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .wrap{ width:100%; max-width:680px; }
+  h1{
+    font-size:2.1rem; text-align:center; margin-bottom:4px;
+    background:linear-gradient(90deg,#2f8fd6,#4fb0e8);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{ text-align:center; color:#7d96ac; font-size:.85rem; margin-bottom:8px; }
+  .timer{
+    text-align:center; font-size:1.1rem; font-weight:700; color:#2f8fd6;
+    margin-bottom:20px; background:#fff; padding:8px; border-radius:12px;
+    border:2px solid #d4e8f6;
+  }
+  .card{
+    background:#fff; border:2px solid #d4e8f6; border-radius:14px;
+    padding:18px; margin-bottom:16px; box-shadow:0 6px 16px rgba(47,143,214,.12);
+  }
+  .sec-title{
+    font-size:1.15rem; color:#2f8fd6; font-weight:700;
+    margin:28px 0 6px; border-bottom:2px solid #d4e8f6; padding-bottom:6px;
+  }
+  .sec-note{ color:#7d96ac; font-size:.8rem; margin-bottom:10px; }
+  .task-h{ font-weight:700; color:#4a7ba0; margin-bottom:6px; font-size:1rem; }
+  .points{ font-size:.78rem; color:#a0b4c6; font-weight:600; }
+  .instr{ font-size:.9rem; color:#465a6e; margin-bottom:12px; line-height:1.4; }
+  .reading-text{
+    background:#f5fafe; border-left:4px solid #4fb0e8; border-radius:8px;
+    padding:12px 14px; font-size:.92rem; line-height:1.55; margin-bottom:12px;
+  }
+  .reading-text p{ margin:0 0 8px; }
+  .options{ list-style:none; padding:0; margin:0 0 10px; }
+  .options li{ margin-bottom:4px; font-size:.9rem; }
+  .audio-note{
+    background:#fff4e0; border-radius:8px; padding:8px 12px;
+    font-size:.82rem; color:#9c7430; margin-bottom:12px;
+  }
+  .play-btn{
+    background:#2f8fd6; color:#fff; border:none; border-radius:10px;
+    padding:8px 16px; font-weight:600; cursor:pointer; font-size:.85rem;
+    margin-bottom:12px;
+  }
+  .play-btn:active{ transform:scale(.97); }
+  .match-row{
+    display:flex; align-items:center; gap:10px; margin-bottom:8px;
+    flex-wrap:wrap;
+  }
+  .match-label{ font-weight:700; min-width:120px; color:#465a6e; font-size:.9rem; }
+  select, input[type="text"]{
+    border:2px solid #d4e8f6; border-radius:10px; padding:8px 10px;
+    font-size:.9rem; color:#27384a; background:#fff; font-family:inherit;
+  }
+  select{ min-width:70px; }
+  input[type="text"]{ width:90px; }
+  .q-block{ margin-bottom:14px; }
+  .q-text{ font-weight:600; margin-bottom:6px; font-size:.92rem; }
+  .radio-opt{ display:block; margin-bottom:4px; font-size:.88rem; cursor:pointer; }
+  .radio-opt input{ margin-right:6px; }
+  textarea{
+    width:100%; min-height:160px; border:2px solid #d4e8f6; border-radius:12px;
+    padding:12px; font-size:.92rem; font-family:inherit; color:#27384a; resize:vertical;
+  }
+  .wordcount{ font-size:.78rem; color:#7d96ac; margin-top:4px; }
+  .stimul{
+    background:#f5fafe; border:1px dashed #4fb0e8; border-radius:10px;
+    padding:12px; font-size:.88rem; font-style:italic; margin-bottom:12px;
+  }
+  .ann{
+    background:linear-gradient(135deg,#2f8fd6,#4fb0e8); color:#fff;
+    border-radius:12px; padding:16px; text-align:center; margin-bottom:12px;
+  }
+  .ann b{ font-size:1.1rem; }
+  .check-btn{
+    display:block; width:100%; background:linear-gradient(90deg,#2f8fd6,#4fb0e8);
+    color:#fff; border:none; border-radius:14px; padding:16px;
+    font-size:1.05rem; font-weight:700; cursor:pointer; margin:24px 0;
+    box-shadow:0 6px 16px rgba(47,143,214,.3);
+  }
+  .check-btn:active{ transform:scale(.98); }
+  .result{
+    display:none; background:#fff; border:2px solid #4fb0e8; border-radius:14px;
+    padding:20px; text-align:center; margin-bottom:16px;
+  }
+  .result.show{ display:block; }
+  .score-big{ font-size:2.4rem; font-weight:800; color:#2f8fd6; }
+  .correct{ background:#e3f7e8 !important; border-color:#5cc97a !important; }
+  .wrong{ background:#fde8e8 !important; border-color:#e87979 !important; }
+  .answer-hint{ font-size:.8rem; color:#5cc97a; font-weight:600; margin-left:6px; }
+  .oral-note{
+    background:#fff4e0; border-radius:8px; padding:10px 12px;
+    font-size:.85rem; color:#9c7430; margin-bottom:10px;
+  }
+  ol.compact{ padding-left:20px; margin:6px 0; font-size:.9rem; }
+  ol.compact li{ margin-bottom:4px; }
+  .back{
+    display:inline-block; color:#2f8fd6; text-decoration:none;
+    font-weight:600; margin-bottom:16px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← к материалам</a>
+  <h1>Мини-экзамен ЕГЭ</h1>
+  <div class="sub">Письменная часть • макс. 30 баллов</div>
+  <div class="timer" id="timer">⏱ Время: 50:00</div>
+
+  <!-- ================= РАЗДЕЛ 1 ================= -->
+  <div class="sec-title">📻 Раздел 1. Аудирование</div>
+  <div class="sec-note">Listening for specific information</div>
+
+  <!-- Задание 1 -->
+  <div class="card">
+    <div class="task-h">Задание 1 <span class="points">(2 балла)</span></div>
+    <div class="instr">Установите соответствие между высказываниями говорящих <b>A–E</b> и утверждениями <b>1–6</b>. Одно утверждение лишнее.</div>
+    <div class="audio-note">🎧 5 коротких монологов о погоде и настроении</div>
+    <button class="play-btn" onclick="playT1()">▶ Прослушать аудио</button>
+    <ul class="options">
+      <li>1. The speaker is happy and excited today.</li>
+      <li>2. It is cold and cloudy outside.</li>
+      <li>3. The speaker feels tired and sad.</li>
+      <li>4. It is sunny and warm outside.</li>
+      <li>5. The speaker is surprised.</li>
+      <li>6. It is windy today.</li>
+    </ul>
+    <div class="match-row"><span class="match-label">Говорящий A</span>
+      <select id="q1a"><option value="">–</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+    <div class="match-row"><span class="match-label">Говорящий B</span>
+      <select id="q1b"><option value="">–</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+    <div class="match-row"><span class="match-label">Говорящий C</span>
+      <select id="q1c"><option value="">–</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+    <div class="match-row"><span class="match-label">Говорящий D</span>
+      <select id="q1d"><option value="">–</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+    <div class="match-row"><span class="match-label">Говорящий E</span>
+      <select id="q1e"><option value="">–</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+  </div>
+
+  <!-- Задание 2 -->
+  <div class="card">
+    <div class="task-h">Задание 2 <span class="points">(3 балла)</span></div>
+    <div class="instr">Определите соответствие утверждений <b>A–G</b> тексту: <b>1 – True</b>, <b>2 – False</b>, <b>3 – Not stated</b>.</div>
+    <div class="audio-note">🎧 Диалог: два человека знакомятся</div>
+    <button class="play-btn" onclick="playT2()">▶ Прослушать аудио</button>
+    <div class="match-row"><span class="match-label">A. Girl's name is Anna</span>
+      <select id="q2a"><option value="">–</option><option>1</option><option>2</option><option>3</option></select></div>
+    <div class="match-row"><span class="match-label">B. Boy is a doctor</span>
+      <select id="q2b"><option value="">–</option><option>1</option><option>2</option><option>3</option></select></div>
+    <div class="match-row"><span class="match-label">C. Anna is from France</span>
+      <select id="q2c"><option value="">–</option><option>1</option><option>2</option><option>3</option></select></div>
+    <div class="match-row"><span class="match-label">D. It is sunny today</span>
+      <select id="q2d"><option value="">–</option><option>1</option><option>2</option><option>3</option></select></div>
+    <div class="match-row"><span class="match-label">E. The boy is happy</span>
+      <select id="q2e"><option value="">–</option><option>1</option><option>2</option><option>3</option></select></div>
+    <div class="match-row"><span class="match-label">F. Anna speaks French at work</span>
+      <select id="q2f"><option value="">–</option><option>1</option><option>2</option><option>3</option></select></div>
+    <div class="match-row"><span class="match-label">G. They are at school</span>
+      <select id="q2g"><option value="">–</option><option>1</option><option>2</option><option>3</option></select></div>
+  </div>
+
+  <!-- ================= РАЗДЕЛ 2 ================= -->
+  <div class="sec-title">📖 Раздел 2. Чтение</div>
+  <div class="sec-note">Reading for specific information</div>
+
+  <!-- Задание 3 -->
+  <div class="card">
+    <div class="task-h">Задание 3 <span class="points">(3 балла)</span></div>
+    <div class="instr">Установите соответствие между текстами <b>A–F</b> и заголовками <b>1–7</b>. Один заголовок лишний.</div>
+    <ul class="options">
+      <li>1. A rainy day in London</li>
+      <li>2. Jobs in a hospital</li>
+      <li>3. A happy family</li>
+      <li>4. Weather around the world</li>
+      <li>5. How to say hello</li>
+      <li>6. Countries and people</li>
+      <li>7. Feelings at school</li>
+    </ul>
+    <div class="reading-text">
+      <p><b>A.</b> Kate is a nurse. She works in a big hospital in Moscow. She is kind and friendly. Her patients like her very much. Every day she helps people feel better.</p>
+      <p><b>B.</b> Today it is windy and cold in Paris. People wear warm coats. Children don't want to go outside. It is not sunny at all. But tomorrow the weather will be nice.</p>
+      <p><b>C.</b> In Japan, people are called Japanese. In Brazil, people speak Portuguese. In Russia, people are Russian. Every country has its own language and traditions.</p>
+      <p><b>D.</b> Tom is a student. He is tired today because he has a big test. He feels nervous and a little sad. But his friends are kind to him and help him feel better.</p>
+      <p><b>E.</b> My mother is a teacher and my father is an engineer. We live in a small house. We are a happy family. We love each other very much.</p>
+      <p><b>F.</b> In Australia it is sunny and hot in December. In Canada it is cold and snowy. In Egypt it is very warm all year. Different places have very different weather.</p>
+    </div>
+    <div class="match-row"><span class="match-label">Текст A</span>
+      <select id="q3a"><option value="">–</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></div>
+    <div class="match-row"><span class="match-label">Текст B</span>
+      <select id="q3b"><option value="">–</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></div>
+    <div class="match-row"><span class="match-label">Текст C</span>
+      <select id="q3c"><option value="">–</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></div>
+    <div class="match-row"><span class="match-label">Текст D</span>
+      <select id="q3d"><option value="">–</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></div>
+    <div class="match-row"><span class="match-label">Текст E</span>
+      <select id="q3e"><option value="">–</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></div>
+    <div class="match-row"><span class="match-label">Текст F</span>
+      <select id="q3f"><option value="">–</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></div>
+  </div>
+
+  <!-- Задания 4-8 -->
+  <div class="card">
+    <div class="task-h">Задания 4–8 <span class="points">(5 баллов)</span></div>
+    <div class="instr">Прочитайте текст и выберите правильный вариант ответа.</div>
+    <div class="reading-text">
+      <p>My name is Ben. I am from the UK. I live in London with my family. My mother is a doctor and my father is a teacher. I have one sister. Her name is Lucy.</p>
+      <p>Today the weather is not very good. It is cloudy and windy. I am a little tired because I didn't sleep well. But I am happy because today is Friday!</p>
+      <p>My best friend is Mike. He is American. He is funny and kind. We read books together and listen to music.</p>
+      <p>I want to be a writer when I grow up. I love to write stories and speak to people about books.</p>
+    </div>
+
+    <div class="q-block" id="q4">
+      <div class="q-text">4. Where is Ben from?</div>
+      <label class="radio-opt"><input type="radio" name="q4" value="1">1. The USA</label>
+      <label class="radio-opt"><input type="radio" name="q4" value="2">2. The UK</label>
+      <label class="radio-opt"><input type="radio" name="q4" value="3">3. Australia</label>
+    </div>
+    <div class="q-block" id="q5">
+      <div class="q-text">5. What is the weather like today?</div>
+      <label class="radio-opt"><input type="radio" name="q5" value="1">1. Sunny and warm</label>
+      <label class="radio-opt"><input type="radio" name="q5" value="2">2. Cold and snowy</label>
+      <label class="radio-opt"><input type="radio" name="q5" value="3">3. Cloudy and windy</label>
+    </div>
+    <div class="q-block" id="q6">
+      <div class="q-text">6. How does Ben feel?</div>
+      <label class="radio-opt"><input type="radio" name="q6" value="1">1. Angry and bored</label>
+      <label class="radio-opt"><input type="radio" name="q6" value="2">2. A little tired but happy</label>
+      <label class="radio-opt"><input type="radio" name="q6" value="3">3. Very excited</label>
+    </div>
+    <div class="q-block" id="q7">
+      <div class="q-text">7. What is Mike like?</div>
+      <label class="radio-opt"><input type="radio" name="q7" value="1">1. Shy and sad</label>
+      <label class="radio-opt"><input type="radio" name="q7" value="2">2. Funny and kind</label>
+      <label class="radio-opt"><input type="radio" name="q7" value="3">3. Tired and serious</label>
+    </div>
+    <div class="q-block" id="q8">
+      <div class="q-text">8. What does Ben want to be?</div>
+      <label class="radio-opt"><input type="radio" name="q8" value="1">1. A doctor</label>
+      <label class="radio-opt"><input type="radio" name="q8" value="2">2. A teacher</label>
+      <label class="radio-opt"><input type="radio" name="q8" value="3">3. A writer</label>
+    </div>
+  </div>
+
+  <!-- ================= РАЗДЕЛ 3 ================= -->
+  <div class="sec-title">✏️ Раздел 3. Грамматика и лексика</div>
+
+  <!-- Задания 9-14 -->
+  <div class="card">
+    <div class="task-h">Задания 9–14: глагол to be <span class="points">(6 баллов)</span></div>
+    <div class="instr">Заполните пропуски правильной формой глагола <b>to be</b>.</div>
+    <div class="reading-text">
+      Hi! My name <input type="text" id="q9" placeholder="9"> Anna.
+      I <input type="text" id="q10" placeholder="10"> from Italy.
+      My parents <input type="text" id="q11" placeholder="11"> Italian.
+      My father <input type="text" id="q12" placeholder="12 (-)"> a doctor —
+      he <input type="text" id="q13" placeholder="13"> a teacher.
+      Today <input type="text" id="q14" placeholder="14"> a sunny day!
+    </div>
+  </div>
+
+  <!-- Задания 15-19 -->
+  <div class="card">
+    <div class="task-h">Задания 15–19: словообразование <span class="points">(5 баллов)</span></div>
+    <div class="instr">Образуйте однокоренные слова от слов в скобках.</div>
+    <div class="reading-text">
+      Tom is a <input type="text" id="q15" placeholder="TEACH"> (TEACH).
+      His students are <input type="text" id="q16" placeholder="FRIEND"> (FRIEND) and kind.
+      Today he is <input type="text" id="q17" placeholder="TIRE"> (TIRE).
+      But he feels <input type="text" id="q18" placeholder="EXCITE"> (EXCITE) about a project.
+      His job is <input type="text" id="q19" placeholder="INTEREST"> (INTEREST).
+    </div>
+  </div>
+
+  <!-- Задания 20-25 -->
+  <div class="card">
+    <div class="task-h">Задания 20–25: выбор слова <span class="points">(6 баллов)</span></div>
+    <div class="instr">Выберите правильный вариант.</div>
+    <div class="reading-text">
+      Hello! I <b>(20)</b> a student from Brazil. People from Brazil <b>(21)</b> Brazilians.
+      Today it <b>(22)</b> windy. I feel a bit <b>(23)</b>. I like to <b>(24)</b> books and <b>(25)</b> to music.
+    </div>
+    <div class="q-block" id="q20">
+      <div class="q-text">20.</div>
+      <label class="radio-opt"><input type="radio" name="q20" value="1">1. is</label>
+      <label class="radio-opt"><input type="radio" name="q20" value="2">2. am</label>
+      <label class="radio-opt"><input type="radio" name="q20" value="3">3. are</label>
+    </div>
+    <div class="q-block" id="q21">
+      <div class="q-text">21.</div>
+      <label class="radio-opt"><input type="radio" name="q21" value="1">1. is</label>
+      <label class="radio-opt"><input type="radio" name="q21" value="2">2. am</label>
+      <label class="radio-opt"><input type="radio" name="q21" value="3">3. are called</label>
+    </div>
+    <div class="q-block" id="q22">
+      <div class="q-text">22.</div>
+      <label class="radio-opt"><input type="radio" name="q22" value="1">1. is</label>
+      <label class="radio-opt"><input type="radio" name="q22" value="2">2. are</label>
+      <label class="radio-opt"><input type="radio" name="q22" value="3">3. am</label>
+    </div>
+    <div class="q-block" id="q23">
+      <div class="q-text">23.</div>
+      <label class="radio-opt"><input type="radio" name="q23" value="1">1. excited</label>
+      <label class="radio-opt"><input type="radio" name="q23" value="2">2. bored</label>
+      <label class="radio-opt"><input type="radio" name="q23" value="3">3. kind</label>
+    </div>
+    <div class="q-block" id="q24">
+      <div class="q-text">24.</div>
+      <label class="radio-opt"><input type="radio" name="q24" value="1">1. listen</label>
+      <label class="radio-opt"><input type="radio" name="q24" value="2">2. read</label>
+      <label class="radio-opt"><input type="radio" name="q24" value="3">3. speak</label>
+    </div>
+    <div class="q-block" id="q25">
+      <div class="q-text">25.</div>
+      <label class="radio-opt"><input type="radio" name="q25" value="1">1. write</label>
+      <label class="radio-opt"><input type="radio" name="q25" value="2">2. match</label>
+      <label class="radio-opt"><input type="radio" name="q25" value="3">3. listen</label>
+    </div>
+  </div>
+
+  <!-- ================= РАЗДЕЛ 4 ================= -->
+  <div class="sec-title">✉️ Раздел 4. Письменная речь</div>
+
+  <div class="card">
+    <div class="task-h">Задание 26 <span class="points">(6 баллов)</span></div>
+    <div class="instr">Напишите ответное электронное письмо другу. Объём — <b>60–80 слов</b>. Ответьте на 3 вопроса и задайте 2 вопроса о книге.</div>
+    <div class="stimul">
+      From: Alex@mail.com<br>
+      Subject: About you!<br><br>
+      …How are you? What is the weather like in your city today? What job does your mother or father do? Are you happy or tired today? Write soon!<br>
+      …I am reading a very interesting book now…
+    </div>
+    <textarea id="q26" placeholder="Dear Alex, ..."></textarea>
+    <div class="wordcount" id="wc26">Слов: 0</div>
+    <div class="oral-note" style="margin-top:10px;">
+      ✍️ Письмо проверяется учителем по критериям К1–К3 (макс. 6 баллов). Автопроверка не оценивает его, но засчитывает попытку при наличии 40+ слов.
+    </div>
+  </div>
+
+  <!-- ================= КНОПКА ПРОВЕРКИ ================= -->
+  <button class="check-btn" onclick="checkAll()">✅ Проверить работу</button>
+
+  <!-- ================= РЕЗУЛЬТАТ ================= -->
+  <div class="result" id="result">
+    <div class="score-big" id="scoreBig">0 / 30</div>
+    <div id="scoreText" style="margin-top:8px; color:#465a6e;"></div>
+    <div id="breakdown" style="margin-top:14px; text-align:left; font-size:.88rem; line-height:1.7;"></div>
+  </div>
+
+  <!-- ================= УСТНАЯ ЧАСТЬ (справочно) ================= -->
+  <div class="sec-title">🎤 Устная часть (с учителем)</div>
+  <div class="card">
+    <div class="sec-note">Выполняется устно. Автопроверка не предусмотрена.</div>
+    <div class="task-h">Задание 1 — Чтение вслух <span class="points">(1 балл)</span></div>
+    <div class="reading-text">In the United Kingdom, the weather is often cloudy and rainy. People in Britain like to talk about the weather every day. Sometimes it is sunny and warm, but it is often windy too.</div>
+    <div class="task-h">Задание 2 — Вопросы по объявлению <span class="points">(4 балла)</span></div>
+    <div class="ann"><b>New English Club at School!</b><br>🌍 Learn English — speak, read, write!</div>
+    <ol class="compact">
+      <li>days / time</li><li>teacher</li><li>activities</li><li>price</li>
+    </ol>
+    <div class="task-h">Задание 3 — Интервью <span class="points">(5 баллов)</span></div>
+    <ol class="compact">
+      <li>What is your name and where are you from?</li>
+      <li>What is the weather like in your city today?</li>
+      <li>How do you feel today?</li>
+      <li>What jobs do people in your family do?</li>
+      <li>What do you like to do?</li>
+    </ol>
+  </div>
+
+</div>
+
+<script>
+/* ============ ТАЙМЕР ============ */
+let totalSec = 50*60;
+const timerEl = document.getElementById('timer');
+const tInt = setInterval(()=>{
+  totalSec--;
+  if(totalSec<=0){ totalSec=0; clearInterval(tInt); timerEl.textContent='⏱ Время вышло!'; checkAll(); return; }
+  const m=String(Math.floor(totalSec/60)).padStart(2,'0');
+  const s=String(totalSec%60).padStart(2,'0');
+  timerEl.textContent=`⏱ Время: ${m}:${s}`;
+},1000);
+
+/* ============ СЧЁТЧИК СЛОВ ============ */
+const ta=document.getElementById('q26'), wc=document.getElementById('wc26');
+ta.addEventListener('input',()=>{
+  const n=ta.value.trim().split(/\s+/).filter(Boolean).length;
+  wc.textContent='Слов: '+n;
+  wc.style.color = (n>=60 && n<=80) ? '#5cc97a' : (n>80 ? '#e87979' : '#7d96ac');
+});
+
+/* ============ ОЗВУЧКА (Web Speech API) ============ */
+function speak(text){
+  if(!('speechSynthesis' in window)){ alert('Озвучка не поддерживается. Используйте текст скриптов.'); return; }
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US'; u.rate=0.85;
+  speechSynthesis.speak(u);
+}
+function playT1(){
+  speak("Speaker A. Hi! My name is Lucy. Today is a great day for me! I got a very good mark at school. I am so happy right now. Everything is wonderful today! "+
+  "Speaker B. Hello. My name is Tom. Look outside, it is cloudy and very cold today. I really don't like this weather. "+
+  "Speaker C. My name is Anna. I am very tired today. I didn't sleep well last night. And I feel a little sad. I just want to go home. "+
+  "Speaker D. Hi! I'm Mike. The weather today is amazing! The sun is shining and it's warm outside. I love sunny days! "+
+  "Speaker E. Hello! My name is Kate. The wind is very strong today. The trees are moving a lot. It is a very windy day!");
+}
+function playT2(){
+  speak("Hi! My name is Jake. What's your name? "+
+  "Hello! My name is Anna. Nice to meet you! "+
+  "Where are you from, Anna? "+
+  "I'm from Italy! I work as a nurse in a hospital. What about you? "+
+  "I'm a teacher. I teach at a primary school. I am very happy in my work. Every day is interesting! "+
+  "That sounds great. I am happy too! Nice to meet you at the sports centre. Bye!");
+}
+
+/* ============ КЛЮЧИ ============ */
+const KEYS={
+  q1a:'1',q1b:'2',q1c:'3',q1d:'4',q1e:'6',
+  q2a:'1',q2b:'2',q2c:'2',q2d:'3',q2e:'1',q2f:'3',q2g:'2',
+  q3a:'2',q3b:'1',q3c:'6',q3d:'7',q3e:'3',q3f:'4',
+  q4:'2',q5:'3',q6:'2',q7:'2',q8:'3',
+  q20:'2',q21:'3',q22:'1',q23:'2',q24:'2',q25:'3'
+};
+/* текстовые ответы (несколько вариантов) */
+const TEXT={
+  q9:['is'], q10:['am'], q11:['are'], q12:["is not","isn't","is not"], q13:['is'], q14:['is'],
+  q15:['teacher'], q16:['friendly'], q17:['tired'], q18:['excited'], q19:['interesting']
+};
+
+function norm(s){ return (s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+
+function checkAll(){
+  let score=0;
+  const lines=[];
+
+  // select-задания
+  for(const id in KEYS){
+    if(id.startsWith('q1')||id.startsWith('q2')||id.startsWith('q3')){
+      const el=document.getElementById(id);
+      const ok=el.value===KEYS[id];
+      el.classList.toggle('correct',ok); el.classList.toggle('wrong',!ok&&el.value!=='');
+      if(ok) score++;
+    }
+  }
+  // radio-задания (4-8, 20-25)
+  ['q4','q5','q6','q7','q8','q20','q21','q22','q23','q24','q25'].forEach(name=>{
+    const sel=document.querySelector(`input[name="${name}"]:checked`);
+    const block=document.getElementById(name);
+    const ok=sel&&sel.value===KEYS[name];
+    block.classList.toggle('correct',ok); block.classList.toggle('wrong',!ok);
+    if(ok) score++;
+  });
+  // текстовые (9-19)
+  for(const id in TEXT){
+    const el=document.getElementById(id);
+    const ok=TEXT[id].map(norm).includes(norm(el.value));
+    el.classList.toggle('correct',ok); el.classList.toggle('wrong',!ok&&el.value!=='');
+    if(ok) score++;
+  }
+
+  // письмо (попытка)
+  const words=ta.value.trim().split(/\s+/).filter(Boolean).length;
+  const letterTried = words>=40;
+  const letterNote = letterTried
+    ? '✍️ Письмо: написано ('+words+' сл.) — на проверку учителю (до 6 б.)'
+    : '✍️ Письмо: не засчитано (нужно 60–80 слов)';
+
+  // итог
+  const maxAuto=24; // 2+3+3+5+6+5 = 24 автопроверяемых балла
+  const res=document.getElementById('result');
+  const big=document.getElementById('scoreBig');
+  const txt=document.getElementById('scoreText');
+  const bd=document.getElementById('breakdown');
+
+  big.textContent=score+' / '+maxAuto+' (+ письмо)';
+  let level='';
+  const pct=score/maxAuto;
+  if(pct>=0.85) level='🌟 Отлично!';
+  else if(pct>=0.65) level='👍 Хорошо!';
+  else if(pct>=0.45) level='🙂 Неплохо, повтори темы.';
+  else level='💪 Нужно ещё поработать.';
+  txt.textContent=level;
+
+  bd.innerHTML=
+    '<b>Разбалловка (автопроверка):</b><br>'+
+    '• Аудирование (зад. 1–2): до 5 б.<br>'+
+    '• Чтение (зад. 3–8): до 8 б.<br>'+
+    '• Грамматика и лексика (зад. 9–25): до 11 б.<br>'+
+    '<br>'+letterNote+'<br>'+
+    '<br><b>Итог за письменную часть:</b> '+score+' из 24 (автопроверка) + до 6 за письмо = макс. 30.';
+
+  res.classList.add('show');
+  res.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
