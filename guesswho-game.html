@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Guess Who – Speaking Activity</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #f5f4f0;
+    --card:     #ffffff;
+    --border:   #e0ddd6;
+    --text:     #1a1a1a;
+    --muted:    #888;
+    --accent:   #1a1a1a;
+    --red:      #c0392b;
+    --green:    #2d6a4f;
+    --radius:   10px;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 16px;
+    font-size: 15px;
+  }
+
+  /* ── Page header ── */
+  .page-header {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .task-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .task-num { font-size: 1.4rem; font-weight: 900; }
+  .task-tag {
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    border: 1.5px solid var(--text);
+    border-radius: 4px; padding: 1px 6px;
+  }
+  .page-header p { font-size: 0.88rem; color: #444; line-height: 1.5; }
+
+  .section-label {
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px;
+  }
+
+  /* ── Board ── */
+  .board-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  .guess-who-board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 7px;
+  }
+
+  .face-tile {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--card);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    aspect-ratio: 3/4;
+    transition: opacity 0.2s, border-color 0.2s;
+    position: relative;
+    user-select: none;
+  }
+  .face-tile:active { transform: scale(0.96); }
+
+  .face-tile.eliminated {
+    opacity: 0.28;
+  }
+
+  .face-tile.highlighted {
+    border-color: var(--accent);
+    border-width: 2.5px;
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  /* emoji area */
+  .tile-emoji-wrap {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.6rem;
+    background: var(--bg);
+    position: relative;
+  }
+
+  /* eliminated X */
+  .elim-x {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .face-tile.eliminated .elim-x { opacity: 1; }
+  .elim-x svg {
+    width: 55%; height: 55%;
+    stroke: var(--red);
+    stroke-width: 3;
+    opacity: 0.75;
+  }
+
+  .tile-name {
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 2px;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    width: 100%;
+    line-height: 1.2;
+  }
+
+  .board-hint {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 10px;
+  }
+  .reset-tiles-btn {
+    display: block; width: 100%;
+    margin-top: 10px; padding: 8px;
+    background: none; border: 1px solid var(--border);
+    border-radius: 6px; font-size: 0.78rem;
+    color: var(--muted); cursor: pointer;
+  }
+  .reset-tiles-btn:active { background: var(--bg); }
+
+  /* ── Dialogue ── */
+  .dialogue-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  .dialogue-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .dialogue-row:last-child { margin-bottom: 0; }
+  .bubble {
+    padding: 9px 11px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+  .bubble-a {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 2px;
+  }
+  .bubble-b {
+    background: var(--accent);
+    color: white;
+    border-bottom-right-radius: 2px;
+  }
+  .bubble .spk {
+    font-weight: 800; font-size: 0.7rem;
+    letter-spacing: 0.5px; display: block;
+    margin-bottom: 3px; opacity: 0.7;
+  }
+  .bubble-b .spk { color: rgba(255,255,255,0.75); }
+
+  /* ── Game ── */
+  .game-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  .start-btn {
+    width: 100%; padding: 14px;
+    background: var(--accent); color: white;
+    border: none; border-radius: var(--radius);
+    font-size: 0.95rem; font-weight: 700;
+    letter-spacing: 0.5px; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .start-btn:active { opacity: 0.8; }
+
+  .secret-card {
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 14px;
+    text-align: center;
+    display: none;
+  }
+  .secret-card.visible { display: block; }
+  .secret-label {
+    font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 8px;
+  }
+  .secret-reveal-btn {
+    padding: 8px 20px;
+    background: none;
+    border: 1.5px solid var(--accent);
+    border-radius: 6px;
+    font-size: 0.82rem; font-weight: 700;
+    cursor: pointer;
+  }
+  .secret-reveal-btn:active { background: var(--accent); color: white; }
+
+  .secret-name-text {
+    display: none;
+    font-size: 1.6rem;
+    margin-top: 6px;
+  }
+  .secret-name-text .s-emoji { font-size: 2.2rem; display: block; margin-bottom: 4px; }
+  .secret-name-text .s-name  { font-size: 1rem; font-weight: 900; display: block; }
+  .secret-name-text.shown { display: block; }
+
+  .role-label {
+    font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted); margin: 12px 0 6px;
+  }
+
+  .q-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-bottom: 10px;
+  }
+  .q-btn {
+    padding: 10px 8px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.78rem; font-weight: 600;
+    cursor: pointer; text-align: left;
+    line-height: 1.35; color: var(--text);
+    transition: all 0.15s;
+  }
+  .q-btn:active, .q-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .answer-bubble {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.88rem;
+    font-style: italic;
+    color: var(--muted);
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 14px;
+    transition: all 0.2s;
+  }
+  .answer-bubble.has-answer {
+    color: var(--text);
+    font-style: normal;
+    border-color: var(--accent);
+    background: white;
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  .guess-row { display: flex; gap: 8px; align-items: center; }
+  .guess-select {
+    flex: 1; padding: 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 0.85rem;
+    background: var(--bg); color: var(--text);
+    outline: none; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+  }
+  .guess-select:focus { border-color: var(--accent); }
+
+  .guess-btn {
+    padding: 10px 16px;
+    background: var(--accent); color: white;
+    border: none; border-radius: 8px;
+    font-size: 0.82rem; font-weight: 700;
+    cursor: pointer; white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+  .guess-btn:active { opacity: 0.8; }
+
+  .result-box {
+    margin-top: 10px; padding: 12px;
+    border-radius: 8px; font-size: 0.88rem;
+    font-weight: 700; text-align: center;
+    display: none;
+  }
+  .result-box.correct { display:block; background:#eaf4ef; color:var(--green); border:1px solid #b7dbc8; }
+  .result-box.wrong   { display:block; background:#fdf0ee; color:var(--red);   border:1px solid #f0c4be; }
+
+  .new-round-btn {
+    display: none; width: 100%; margin-top: 10px; padding: 11px;
+    background: none; border: 1.5px solid var(--accent);
+    border-radius: 8px; font-size: 0.85rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .new-round-btn:active { background: var(--accent); color: white; }
+
+  .game-body { display: none; }
+  .game-body.visible { display: block; }
+
+  /* ── Detail modal ── */
+  .detail-modal {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 999;
+    align-items: flex-end; justify-content: center;
+  }
+  .detail-modal.open { display: flex; }
+  .detail-sheet {
+    background: white;
+    border-radius: 16px 16px 0 0;
+    padding: 20px 18px 32px;
+    width: 100%; max-width: 480px;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .detail-handle {
+    width: 36px; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+  .detail-top {
+    display: flex; gap: 14px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .detail-emoji-big {
+    font-size: 3.5rem;
+    width: 72px; height: 72px;
+    background: var(--bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .detail-name { font-size: 1.1rem; font-weight: 900; margin-bottom: 3px; }
+  .detail-sub  { font-size: 0.78rem; color: var(--muted); }
+  .detail-facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .detail-fact {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 9px 11px;
+  }
+  .detail-fact .f-label {
+    font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 2px;
+  }
+  .detail-fact .f-val { font-size: 0.88rem; font-weight: 700; }
+  .detail-close {
+    width: 100%; margin-top: 14px; padding: 11px;
+    background: var(--accent); color: white;
+    border: none; border-radius: 8px;
+    font-size: 0.88rem; font-weight: 700; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="task-row">
+    <span class="task-num">9</span>
+    <span class="task-tag">Speaking</span>
+  </div>
+  <p>Work in pairs. Take turns to talk about famous people. Ask questions to guess who your partner is talking about.</p>
+</div>
+
+<!-- BOARD -->
+<div class="board-wrap">
+  <div class="section-label">The People — tap to see info · long-press to eliminate</div>
+  <div class="guess-who-board" id="gwBoard"></div>
+  <p class="board-hint">👆 Tap → info &nbsp;|&nbsp; 👆 Hold → eliminate / restore</p>
+  <button class="reset-tiles-btn" onclick="resetTiles()">↺ Restore all eliminated</button>
+</div>
+
+<!-- EXAMPLE DIALOGUE -->
+<div class="dialogue-wrap">
+  <div class="section-label">Example Dialogue</div>
+  <div class="dialogue-row">
+    <div class="bubble bubble-a"><span class="spk">A</span>Is it a man?</div>
+    <div class="bubble bubble-b"><span class="spk">B</span>No, it's a woman.</div>
+  </div>
+  <div class="dialogue-row">
+    <div class="bubble bubble-a"><span class="spk">A</span>Where is she from?</div>
+    <div class="bubble bubble-b"><span class="spk">B</span>She's English.</div>
+  </div>
+  <div class="dialogue-row">
+    <div class="bubble bubble-a"><span class="spk">A</span>How old is she?</div>
+    <div class="bubble bubble-b"><span class="spk">B</span>She is thirty-eight.</div>
+  </div>
+  <div class="dialogue-row">
+    <div class="bubble bubble-a"><span class="spk">A</span>Is it Adele?</div>
+    <div class="bubble bubble-b"><span class="spk">B</span>Yes, that's right!</div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div class="game-wrap">
+  <div class="section-label">Guess Who? — Practice Game</div>
+  <button class="start-btn" onclick="startGame()">Pick a Secret Person →</button>
+
+  <div class="game-body" id="gameBody">
+
+    <div class="secret-card visible" id="secretCard">
+      <div class="secret-label">Player B only — your secret person</div>
+      <button class="secret-reveal-btn" id="revealBtn" onclick="toggleReveal()">Tap to reveal</button>
+      <div class="secret-name-text" id="secretNameText">
+        <span class="s-emoji" id="secretEmoji"></span>
+        <span class="s-name"  id="secretName"></span>
+      </div>
+    </div>
+
+    <div class="role-label">Player A — choose a question</div>
+    <div class="q-grid">
+      <button class="q-btn" onclick="ask('gender',this)">Is it a man<br>or a woman?</button>
+      <button class="q-btn" onclick="ask('country',this)">Where is<br>he / she from?</button>
+      <button class="q-btn" onclick="ask('nationality',this)">What is his /<br>her nationality?</button>
+      <button class="q-btn" onclick="ask('age',this)">How old is<br>he / she?</button>
+      <button class="q-btn" onclick="ask('profession',this)">What does<br>he / she do?</button>
+      <button class="q-btn" onclick="ask('born',this)">When was<br>he / she born?</button>
+    </div>
+
+    <div class="role-label">Player B — answer</div>
+    <div class="answer-bubble" id="answerBubble">Waiting for a question…</div>
+
+    <div class="divider"></div>
+
+    <div class="role-label">Player A — make your guess</div>
+    <div class="guess-row">
+      <select class="guess-select" id="guessSelect">
+        <option value="">— choose a person —</option>
+      </select>
+      <button class="guess-btn" onclick="makeGuess()">Guess</button>
+    </div>
+
+    <div class="result-box"  id="resultBox"></div>
+    <button class="new-round-btn" id="newRoundBtn" onclick="startGame()">↺ New Round</button>
+
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="detail-modal" id="detailModal" onclick="closeDetail(event)">
+  <div class="detail-sheet" id="detailSheet">
+    <div class="detail-handle"></div>
+    <div class="detail-top">
+      <div class="detail-emoji-big" id="dEmoji"></div>
+      <div>
+        <div class="detail-name" id="dName"></div>
+        <div class="detail-sub"  id="dSub"></div>
+      </div>
+    </div>
+    <div class="detail-facts">
+      <div class="detail-fact"><div class="f-label">Age</div><div class="f-val" id="dAge"></div></div>
+      <div class="detail-fact"><div class="f-label">Gender</div><div class="f-val" id="dGender"></div></div>
+      <div class="detail-fact"><div class="f-label">Nationality</div><div class="f-val" id="dNat"></div></div>
+      <div class="detail-fact"><div class="f-label">Country</div><div class="f-val" id="dCountry"></div></div>
+      <div class="detail-fact" style="grid-column:span 2">
+        <div class="f-label">Profession</div>
+        <div class="f-val" id="dProf"></div>
+      </div>
+    </div>
+    <button class="detail-close" onclick="document.getElementById('detailModal').classList.remove('open')">Close</button>
+  </div>
+</div>
+
+<script>
+const YEAR = 2026;
+
+/* ── People data — emoji instead of photos ── */
+const people = [
+  { name:"Adele",             born:1988, country:"England, UK",     nationality:"British",        profession:"a singer",            gender:"Woman", flag:"🇬🇧", emoji:"🎤" },
+  { name:"Alice Braga",       born:1983, country:"Brazil",          nationality:"Brazilian",      profession:"an actress",           gender:"Woman", flag:"🇧🇷", emoji:"🎬" },
+  { name:"Andy Murray",       born:1987, country:"Scotland, UK",    nationality:"British",        profession:"a tennis player",     gender:"Man",   flag:"🇬🇧", emoji:"🎾" },
+  { name:"Donatella Versace", born:1955, country:"Italy",           nationality:"Italian",        profession:"a fashion designer",  gender:"Woman", flag:"🇮🇹", emoji:"👗" },
+  { name:"Kendall Jenner",    born:1995, country:"USA",             nationality:"American",       profession:"a model",             gender:"Woman", flag:"🇺🇸", emoji:"💃" },
+  { name:"Lana Condor",       born:1997, country:"Vietnam / USA",   nationality:"American",       profession:"an actress",           gender:"Woman", flag:"🇺🇸", emoji:"🌟" },
+  { name:"Lionel Messi",      born:1987, country:"Argentina",       nationality:"Argentine",      profession:"a football player",   gender:"Man",   flag:"🇦🇷", emoji:"⚽" },
+  { name:"Mark Zuckerberg",   born:1984, country:"USA",             nationality:"American",       profession:"a businessman", gender:"Man",   flag:"🇺🇸", emoji:"💻" },
+  { name:"J.K. Rowling",      born:1965, country:"England, UK",     nationality:"British",        profession:"a writer",            gender:"Woman", flag:"🇬🇧", emoji:"📚" },
+  { name:"Paloma Picasso",    born:1949, country:"France / Spain",  nationality:"French-Spanish", profession:"a fashion designer",  gender:"Woman", flag:"🇫🇷", emoji:"💍" },
+  { name:"Rafael Nadal",      born:1986, country:"Spain",           nationality:"Spanish",        profession:"a tennis player",     gender:"Man",   flag:"🇪🇸", emoji:"🏆" }
+];
+
+let secretPerson = null;
+let revealShown  = false;
+
+/* ── helpers ── */
+function age(p){ return YEAR - p.born; }
+function toWords(n){
+  const a=['zero','one','two','three','four','five','six','seven','eight','nine',
+           'ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen',
+           'seventeen','eighteen','nineteen'];
+  const b=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+  if(n<20) return a[n];
+  const t=Math.floor(n/10), o=n%10;
+  return o===0 ? b[t] : b[t]+'-'+a[o];
+}
+
+/* ── build board ── */
+function buildBoard(){
+  const board  = document.getElementById('gwBoard');
+  const select = document.getElementById('guessSelect');
+  board.innerHTML = '';
+  select.innerHTML = '<option value="">— choose a person —</option>';
+
+  people.forEach((p,i)=>{
+    const tile = document.createElement('div');
+    tile.className   = 'face-tile';
+    tile.id          = 'tile-'+i;
+    tile.dataset.index = i;
+
+    tile.innerHTML = `
+      <div class="tile-emoji-wrap">
+        <span style="position:relative;z-index:1">${p.emoji}</span>
+        <div class="elim-x">
+          <svg viewBox="0 0 24 24" fill="none">
+            <line x1="4" y1="4" x2="20" y2="20"/>
+            <line x1="20" y1="4" x2="4" y2="20"/>
+          </svg>
+        </div>
+      </div>
+      <div class="tile-name">${p.flag} ${p.name.split(' ')[0]}</div>`;
+
+    /* tap → detail */
+    tile.addEventListener('click', ()=>{ openDetail(i); });
+
+    /* long-press → eliminate */
+    let pressTimer;
+    tile.addEventListener('pointerdown', ()=>{
+      pressTimer = setTimeout(()=>{ toggleEliminate(i); }, 500);
+    });
+    tile.addEventListener('pointerup',    ()=> clearTimeout(pressTimer));
+    tile.addEventListener('pointerleave', ()=> clearTimeout(pressTimer));
+
+    board.appendChild(tile);
+
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = p.emoji + ' ' + p.name;
+    select.appendChild(opt);
+  });
+}
+
+/* ── eliminate ── */
+function toggleEliminate(i){
+  document.getElementById('tile-'+i).classList.toggle('eliminated');
+  if(navigator.vibrate) navigator.vibrate(40);
+}
+function resetTiles(){
+  people.forEach((_,i)=>{
+    document.getElementById('tile-'+i).classList.remove('eliminated');
+  });
+}
+
+/* ── detail sheet ── */
+function openDetail(i){
+  const p = people[i];
+  document.getElementById('dEmoji').textContent   = p.emoji;
+  document.getElementById('dName').textContent    = p.flag + ' ' + p.name;
+  document.getElementById('dSub').textContent     = p.profession;
+  document.getElementById('dAge').textContent     = age(p) + ' years old';
+  document.getElementById('dGender').textContent  = p.gender;
+  document.getElementById('dNat').textContent     = p.nationality;
+  document.getElementById('dCountry').textContent = p.country;
+  document.getElementById('dProf').textContent    = p.profession;
+  document.getElementById('detailModal').classList.add('open');
+}
+function closeDetail(e){
+  if(e.target === document.getElementById('detailModal')){
+    document.getElementById('detailModal').classList.remove('open');
+  }
+}
+
+/* ── start game ── */
+function startGame(){
+  const idx    = Math.floor(Math.random() * people.length);
+  secretPerson = people[idx];
+  revealShown  = false;
+
+  document.getElementById('secretEmoji').textContent = secretPerson.emoji;
+  document.getElementById('secretName').textContent  = secretPerson.flag + ' ' + secretPerson.name;
+  document.getElementById('secretNameText').classList.remove('shown');
+  document.getElementById('revealBtn').style.display = 'inline-block';
+  document.getElementById('revealBtn').textContent   = 'Tap to reveal';
+
+  document.getElementById('answerBubble').textContent = 'Waiting for a question…';
+  document.getElementById('answerBubble').classList.remove('has-answer');
+  document.getElementById('resultBox').className   = 'result-box';
+  document.getElementById('resultBox').textContent = '';
+  document.getElementById('newRoundBtn').style.display = 'none';
+  document.getElementById('guessSelect').value = '';
+  document.querySelectorAll('.q-btn').forEach(b => b.classList.remove('active'));
+
+  people.forEach((_,i)=> document.getElementById('tile-'+i).classList.remove('highlighted'));
+
+  document.getElementById('gameBody').classList.add('visible');
+  document.querySelector('.game-wrap').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ── reveal ── */
+function toggleReveal(){
+  revealShown = !revealShown;
+  const nameEl = document.getElementById('secretNameText');
+  const btn    = document.getElementById('revealBtn');
+  if(revealShown){
+    nameEl.classList.add('shown');
+    btn.textContent = 'Hide';
+    const idx = people.indexOf(secretPerson);
+    document.getElementById('tile-'+idx).classList.add('highlighted');
+    document.getElementById('tile-'+idx).scrollIntoView({ behavior:'smooth', block:'nearest' });
+  } else {
+    nameEl.classList.remove('shown');
+    btn.textContent = 'Tap to reveal';
+    people.forEach((_,i)=> document.getElementById('tile-'+i).classList.remove('highlighted'));
+  }
+}
+
+/* ── ask ── */
+function ask(type, btnEl){
+  if(!secretPerson) return;
+  const p  = secretPerson;
+  const aw = toWords(age(p));
+  const pr = p.gender === 'Man' ? 'He' : 'She';
+  const art = /^[aeiou]/i.test(p.profession) ? 'an' : 'a';
+
+  const answers = {
+    gender:      `It's a ${p.gender === 'Man' ? 'man' : 'woman'}.`,
+    country:     `${pr}'s from ${p.country}.`,
+    nationality: `${pr}'s ${p.nationality}.`,
+    age:         `${pr} is ${aw} years old.`,
+    profession:  `${pr}'s ${art} ${p.profession.toLowerCase()}.`,
+    born:        `${pr} was born in ${p.born}.`
+  };
+
+  document.querySelectorAll('.q-btn').forEach(b => b.classList.remove('active'));
+  btnEl.classList.add('active');
+
+  const bubble = document.getElementById('answerBubble');
+  bubble.textContent = answers[type];
+  bubble.classList.add('has-answer');
+}
+
+/* ── guess ── */
+function makeGuess(){
+  if(!secretPerson) return;
+  const sel = document.getElementById('guessSelect');
+  if(sel.value === ''){ sel.focus(); return; }
+
+  const guessed = people[parseInt(sel.value)];
+  const result  = document.getElementById('resultBox');
+  const newBtn  = document.getElementById('newRoundBtn');
+
+  if(guessed.name === secretPerson.name){
+    result.className   = 'result-box correct';
+    result.textContent = `✓ Correct! It's ${secretPerson.emoji} ${secretPerson.name}!`;
+  } else {
+    result.className   = 'result-box wrong';
+    result.textContent = `✗ Not quite — it was ${secretPerson.emoji} ${secretPerson.name}. Try again!`;
+  }
+
+  newBtn.style.display = 'block';
+
+  const idx = people.indexOf(secretPerson);
+  document.getElementById('tile-'+idx).classList.add('highlighted');
+  document.getElementById('tile-'+idx).scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+/* ── init ── */
+buildBoard();
+</script>
+
+</body>
+</html>
