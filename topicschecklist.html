@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ЕГЭ Английский — Кодификатор ФИПИ</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --bg:#f9f9f9;--card:#fff;--ink:#1a1a1a;--muted:#888;
+    --line:#e8e8e8;--accent:#2563eb;--ok:#16a34a;
+    --soft:#f3f4f6;--warn:#f59e0b;
+  }
+  body{
+    font-family:'Segoe UI',-apple-system,system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);
+    line-height:1.6;-webkit-font-smoothing:antialiased;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(249,249,249,.95);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    padding:14px 24px;
+  }
+  .topbar-inner{
+    max-width:860px;margin:0 auto;
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  .topbar h2{font-size:15px;font-weight:600;white-space:nowrap;}
+  .bar-wrap{flex:1;min-width:160px;}
+  .bar-bg{height:8px;background:var(--line);border-radius:99px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .4s ease;}
+  .bar-label{font-size:13px;color:var(--muted);margin-top:4px;}
+  .reset-btn{
+    background:none;border:1px solid var(--line);border-radius:8px;
+    padding:6px 12px;font-size:13px;cursor:pointer;color:var(--muted);
+    white-space:nowrap;transition:.15s;
+  }
+  .reset-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+  /* ── WRAP ── */
+  .wrap{max-width:860px;margin:0 auto;padding:32px 24px 80px;}
+
+  /* ── HERO ── */
+  .hero{text-align:center;margin-bottom:40px;}
+  .hero .label{
+    display:inline-block;font-size:12px;letter-spacing:2px;
+    text-transform:uppercase;color:var(--muted);margin-bottom:8px;
+  }
+  .hero h1{font-size:28px;font-weight:700;margin-bottom:6px;}
+  .hero p{color:var(--muted);font-size:15px;}
+
+  /* ── SECTION ── */
+  .section{margin-bottom:40px;}
+  .section-head{
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:16px;padding-bottom:10px;
+    border-bottom:2px solid var(--line);
+  }
+  .section-icon{font-size:20px;}
+  .section-head h2{font-size:18px;font-weight:700;}
+  .section-sub{font-size:13px;color:var(--muted);margin-left:auto;}
+
+  /* ── TOPIC CARD ── */
+  .topic{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:18px 20px;margin-bottom:10px;
+    transition:.2s;
+  }
+  .topic:hover{border-color:#c7d7fb;}
+  .topic.done{background:#f0fdf4;border-color:#bbf7d0;}
+  .topic.partial{background:#fffbeb;border-color:#fde68a;}
+
+  .topic-top{
+    display:flex;align-items:flex-start;gap:14px;
+  }
+
+  /* main checkbox */
+  .cb{
+    width:22px;height:22px;flex-shrink:0;
+    border:2px solid var(--line);border-radius:7px;
+    display:flex;align-items:center;justify-content:center;
+    transition:.15s;margin-top:2px;cursor:pointer;
+    position:relative;
+  }
+  .cb:hover{border-color:var(--accent);}
+  .topic.done .cb{background:var(--ok);border-color:var(--ok);}
+  .topic.partial .cb{background:var(--warn);border-color:var(--warn);}
+  .cb svg{display:none;pointer-events:none;}
+  .topic.done .cb svg{display:block;}
+  .topic.partial .cb .check-svg{display:none;}
+  .topic.partial .cb .dash-svg{display:block;}
+
+  .topic-body{flex:1;min-width:0;}
+  .topic-title{
+    font-size:16px;font-weight:600;
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    cursor:pointer;user-select:none;
+  }
+  .badge{font-size:11px;padding:2px 8px;border-radius:99px;font-weight:600;}
+  .badge-star{background:#fef3c7;color:#92400e;}
+  .badge-hot{background:#fee2e2;color:#991b1b;}
+  .topic-desc{font-size:14px;color:var(--muted);margin-top:3px;cursor:pointer;}
+
+  /* progress mini */
+  .mini-bar-wrap{margin-top:6px;}
+  .mini-bar-bg{height:4px;background:var(--line);border-radius:99px;overflow:hidden;width:100%;}
+  .mini-bar-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s;}
+  .mini-bar-label{font-size:11px;color:var(--muted);margin-top:2px;}
+
+  /* expand arrow */
+  .arrow-btn{
+    background:none;border:none;cursor:pointer;
+    color:var(--muted);font-size:18px;
+    padding:2px 6px;border-radius:6px;
+    transition:transform .25s;flex-shrink:0;
+    margin-top:1px;
+  }
+  .arrow-btn:hover{background:var(--soft);}
+  .arrow-btn.open{transform:rotate(180deg);}
+
+  /* expandable content */
+  .topic-content{
+    overflow:hidden;max-height:0;
+    transition:max-height .35s ease,padding .25s;
+  }
+  .topic-content.open{max-height:3000px;padding-top:14px;}
+  .topic-content-inner{border-top:1px solid var(--line);padding-top:14px;}
+
+  /* ── SUBTOPIC LIST ── */
+  .subtopic-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+  .subtopic{
+    display:flex;align-items:center;gap:10px;
+    padding:8px 12px;border-radius:10px;
+    background:var(--soft);cursor:pointer;
+    transition:.15s;user-select:none;
+  }
+  .subtopic:hover{background:#e8edfb;}
+  .subtopic.sdone{background:#dcfce7;}
+  .subtopic.sdone .scb{background:var(--ok);border-color:var(--ok);}
+  .subtopic.sdone .scb svg{display:block;}
+  .subtopic.sdone .sub-text{text-decoration:line-through;color:var(--muted);}
+
+  /* sub checkbox */
+  .scb{
+    width:18px;height:18px;flex-shrink:0;
+    border:2px solid #ccc;border-radius:5px;
+    display:flex;align-items:center;justify-content:center;
+    transition:.15s;
+  }
+  .scb svg{display:none;}
+  .sub-text{font-size:14px;flex:1;}
+  .sub-badge{font-size:11px;color:var(--muted);background:#fff;
+    border:1px solid var(--line);border-radius:6px;
+    padding:1px 7px;white-space:nowrap;}
+
+  /* extra content (tables, pre) */
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0;}
+  th{background:var(--soft);padding:8px 10px;text-align:left;font-weight:600;}
+  td{padding:8px 10px;border-top:1px solid var(--line);}
+  tr:hover td{background:var(--soft);}
+  pre{
+    background:var(--soft);border-radius:10px;
+    padding:14px 16px;font-size:13px;
+    font-family:'Courier New',monospace;
+    overflow-x:auto;margin:10px 0;line-height:1.7;
+  }
+
+  /* priority */
+  .priority{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .priority table{margin:0;}
+  .priority th{font-size:13px;}
+  .pnum{
+    width:32px;height:32px;border-radius:50%;
+    background:var(--accent);color:#fff;
+    display:inline-flex;align-items:center;
+    justify-content:center;font-weight:700;font-size:13px;
+  }
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;font-size:13px;color:var(--muted);}
+  .legend span{display:flex;align-items:center;gap:6px;}
+
+  .subsection-label{
+    font-size:13px;font-weight:600;color:var(--muted);
+    text-transform:uppercase;letter-spacing:1px;
+    margin:20px 0 10px 4px;
+  }
+
+  @media(max-width:560px){
+    .hero h1{font-size:22px;}
+    .topbar-inner{gap:10px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ── TOP BAR ── -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <h2>📘 ЕГЭ Английский</h2>
+    <div class="bar-wrap">
+      <div class="bar-bg"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+      <div class="bar-label" id="barLabel">0 / 0 подтем изучено</div>
+    </div>
+    <button class="reset-btn" onclick="resetAll()">↺ Сбросить</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <span class="label">Кодификатор ФИПИ</span>
+    <h1>Грамматика и лексика</h1>
+    <p>Отмечайте подтемы — прогресс сохраняется автоматически</p>
+  </div>
+
+  <div class="legend">
+    <span><span class="badge badge-star">⭐ базовое</span> — нельзя не знать</span>
+    <span><span class="badge badge-hot">🔥 топ</span> — отдельное задание ЕГЭ</span>
+  </div>
+
+  <!-- ══════════════════════════════
+       ГРАММАТИКА
+  ══════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-icon">📘</span>
+      <h2>Грамматика</h2>
+      <span class="section-sub">12 тем</span>
+    </div>
+
+    <!-- T1 Времена -->
+    <div class="topic" id="t1">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t1')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t1')">
+            1. Видо-временные формы (Tenses)
+            <span class="badge badge-star">⭐ базовое</span>
+          </div>
+          <div class="topic-desc" onclick="openTopic('t1')">Active & Passive Voice — основа каждого задания</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t1" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t1">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t1" onclick="openTopic('t1')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t1">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t1s1" onclick="toggleSub('t1','t1s1')">
+              <div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <span class="sub-text">Present Simple, Continuous, Perfect, Perfect Continuous</span>
+              <span class="sub-badge">Active</span>
+            </div>
+            <div class="subtopic" id="t1s2" onclick="toggleSub('t1','t1s2')">
+              <div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <span class="sub-text">Present Simple Passive, Present Continuous Passive</span>
+              <span class="sub-badge">Passive</span>
+            </div>
+            <div class="subtopic" id="t1s3" onclick="toggleSub('t1','t1s3')">
+              <div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <span class="sub-text">Past Simple, Continuous, Perfect, Perfect Continuous</span>
+              <span class="sub-badge">Active</span>
+            </div>
+            <div class="subtopic" id="t1s4" onclick="toggleSub('t1','t1s4')">
+              <div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <span class="sub-text">Past Simple Passive, Past Continuous Passive</span>
+              <span class="sub-badge">Passive</span>
+            </div>
+            <div class="subtopic" id="t1s5" onclick="toggleSub('t1','t1s5')">
+              <div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <span class="sub-text">Future Simple, Continuous, Perfect, be going to</span>
+              <span class="sub-badge">Active</span>
+            </div>
+            <div class="subtopic" id="t1s6" onclick="toggleSub('t1','t1s6')">
+              <div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <span class="sub-text">Future Simple Passive</span>
+              <span class="sub-badge">Passive</span>
+            </div>
+            <div class="subtopic" id="t1s7" onclick="toggleSub('t1','t1s7')">
+              <div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <span class="sub-text">Future-in-the-Past (would do)</span>
+              <span class="sub-badge">⭐</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T2 Модальные -->
+    <div class="topic" id="t2">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t2')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t2')">2. Модальные глаголы <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t2')">can, must, should, may, have to, need, shall…</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t2" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t2">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t2" onclick="openTopic('t2')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t2">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t2s1" onclick="toggleSub('t2','t2s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">can / could — могу, умею, разрешение</span></div>
+            <div class="subtopic" id="t2s2" onclick="toggleSub('t2','t2s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">may / might — возможность, разрешение</span></div>
+            <div class="subtopic" id="t2s3" onclick="toggleSub('t2','t2s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">must — должен; mustn't — запрет</span></div>
+            <div class="subtopic" id="t2s4" onclick="toggleSub('t2','t2s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">have to — вынужден, необходимость</span></div>
+            <div class="subtopic" id="t2s5" onclick="toggleSub('t2','t2s5')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">should / ought to — следует, совет</span></div>
+            <div class="subtopic" id="t2s6" onclick="toggleSub('t2','t2s6')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">need / shall</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T3 Неличные формы -->
+    <div class="topic" id="t3">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t3')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t3')">3. Неличные формы глагола</div>
+          <div class="topic-desc" onclick="openTopic('t3')">Инфинитив, герундий, причастие, Complex Object</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t3" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t3">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t3" onclick="openTopic('t3')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t3">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t3s1" onclick="toggleSub('t3','t3s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Инфинитив (to do / do) ⭐</span></div>
+            <div class="subtopic" id="t3s2" onclick="toggleSub('t3','t3s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Герундий (-ing после like, enjoy, stop…) ⭐</span></div>
+            <div class="subtopic" id="t3s3" onclick="toggleSub('t3','t3s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Participle I (doing) и Participle II (done)</span></div>
+            <div class="subtopic" id="t3s4" onclick="toggleSub('t3','t3s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Complex Object — I want him to go</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T4 Conditionals -->
+    <div class="topic" id="t4">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t4')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t4')">4. Условные предложения (Conditionals) <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t4')">Type 0, 1, 2, 3</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t4" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t4">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t4" onclick="openTopic('t4')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t4">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t4s1" onclick="toggleSub('t4','t4s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Type 0 — If you heat ice, it melts (всегда верно)</span></div>
+            <div class="subtopic" id="t4s2" onclick="toggleSub('t4','t4s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Type 1 — If it rains, I will stay (реальное будущее) ⭐</span></div>
+            <div class="subtopic" id="t4s3" onclick="toggleSub('t4','t4s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Type 2 — If I were you, I would go (нереальное настоящее) ⭐</span></div>
+            <div class="subtopic" id="t4s4" onclick="toggleSub('t4','t4s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Type 3 — If I had known, I would have come (прошлое)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+     <!-- T5 Существительное -->
+    <div class="topic" id="t5">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t5')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t5')">5. Существительное (Noun) <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t5')">Множественное число, исключения, 's, исчисляемые</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t5" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t5">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t5" onclick="openTopic('t5')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t5">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t5s1" onclick="toggleSub('t5','t5s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Правильное мн. число: +s / +es ⭐</span></div>
+            <div class="subtopic" id="t5s2" onclick="toggleSub('t5','t5s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Исключения: man→men, child→children, foot→feet ⭐</span></div>
+            <div class="subtopic" id="t5s3" onclick="toggleSub('t5','t5s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Притяжательный падеж 's / ' ⭐</span></div>
+            <div class="subtopic" id="t5s4" onclick="toggleSub('t5','t5s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Исчисляемые / неисчисляемые существительные ⭐</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T6 Артикли -->
+    <div class="topic" id="t6">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t6')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t6')">6. Артикли (Articles) <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t6')">a / an / the / ∅ — включая географические названия</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t6" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t6">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t6" onclick="openTopic('t6')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t6">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t6s1" onclick="toggleSub('t6','t6s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">a / an — неопределённый артикль ⭐</span></div>
+            <div class="subtopic" id="t6s2" onclick="toggleSub('t6','t6s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">the — определённый артикль ⭐</span></div>
+            <div class="subtopic" id="t6s3" onclick="toggleSub('t6','t6s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">∅ — нулевой артикль ⭐</span></div>
+            <div class="subtopic" id="t6s4" onclick="toggleSub('t6','t6s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Артикли с географическими названиями</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T7 Местоимения -->
+    <div class="topic" id="t7">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t7')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t7')">7. Местоимения (Pronouns) <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t7')">Личные, притяжательные, указательные, неопределённые</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t7" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t7">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t7" onclick="openTopic('t7')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t7">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t7s1" onclick="toggleSub('t7','t7s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Личные: I, you, he, she, it, we, they ⭐</span></div>
+            <div class="subtopic" id="t7s2" onclick="toggleSub('t7','t7s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Притяжательные: my/mine, your/yours… ⭐</span></div>
+            <div class="subtopic" id="t7s3" onclick="toggleSub('t7','t7s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Указательные: this/that, these/those ⭐</span></div>
+            <div class="subtopic" id="t7s4" onclick="toggleSub('t7','t7s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Возвратные: myself, yourself, himself…</span></div>
+            <div class="subtopic" id="t7s5" onclick="toggleSub('t7','t7s5')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Неопределённые: some/any/no/every + body/thing/where ⭐</span></div>
+            <div class="subtopic" id="t7s6" onclick="toggleSub('t7','t7s6')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">much / many / little / few / a lot of ⭐</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T8 Прилагательное -->
+    <div class="topic" id="t8">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t8')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t8')">8. Прилагательное и наречие <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t8')">Степени сравнения, исключения, конструкции</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t8" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t8">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t8" onclick="openTopic('t8')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t8">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t8s1" onclick="toggleSub('t8','t8s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Степени сравнения: big→bigger→biggest ⭐</span></div>
+            <div class="subtopic" id="t8s2" onclick="toggleSub('t8','t8s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Исключения: good→better→best; bad→worse→worst ⭐</span></div>
+            <div class="subtopic" id="t8s3" onclick="toggleSub('t8','t8s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">far→further→furthest ⭐</span></div>
+            <div class="subtopic" id="t8s4" onclick="toggleSub('t8','t8s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Конструкции: as…as; the more…the more</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T9 Числительные -->
+    <div class="topic" id="t9">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t9')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t9')">9. Числительные <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t9')">Количественные и порядковые</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t9" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t9">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t9" onclick="openTopic('t9')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t9">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t9s1" onclick="toggleSub('t9','t9s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Количественные: one, two, three… ⭐</span></div>
+            <div class="subtopic" id="t9s2" onclick="toggleSub('t9','t9s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Порядковые: first, second, third… ⭐</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T10 Предлоги -->
+    <div class="topic" id="t10">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t10')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t10')">10. Предлоги (Prepositions) <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t10')">Времени, места, направления</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t10" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t10">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t10" onclick="openTopic('t10')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t10">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t10s1" onclick="toggleSub('t10','t10s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Времени: in / on / at ⭐</span></div>
+            <div class="subtopic" id="t10s2" onclick="toggleSub('t10','t10s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Места: in / on / at / under / between ⭐</span></div>
+            <div class="subtopic" id="t10s3" onclick="toggleSub('t10','t10s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Направления: to / from / into</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T11 Синтаксис -->
+    <div class="topic" id="t11">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t11')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t11')">11. Синтаксис</div>
+          <div class="topic-desc" onclick="openTopic('t11')">Вопросы, отрицания, сложные предложения, Reported Speech</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t11" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t11">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t11" onclick="openTopic('t11')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t11">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t11s1" onclick="toggleSub('t11','t11s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Прямой порядок слов ⭐</span></div>
+            <div class="subtopic" id="t11s2" onclick="toggleSub('t11','t11s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Общие и Wh-вопросы ⭐</span></div>
+            <div class="subtopic" id="t11s3" onclick="toggleSub('t11','t11s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Tag questions (разделительные вопросы) ⭐</span></div>
+            <div class="subtopic" id="t11s4" onclick="toggleSub('t11','t11s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Отрицательные предложения ⭐</span></div>
+            <div class="subtopic" id="t11s5" onclick="toggleSub('t11','t11s5')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Сложносочинённые (and, but, or) и сложноподчинённые ⭐</span></div>
+            <div class="subtopic" id="t11s6" onclick="toggleSub('t11','t11s6')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Reported Speech / согласование времён ⭐</span></div>
+            <div class="subtopic" id="t11s7" onclick="toggleSub('t11','t11s7')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Конструкция there is / there are ⭐</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T12 Словообразование -->
+    <div class="topic" id="t12">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t12')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t12')">12. Словообразование <span class="badge badge-hot">🔥 топ ЕГЭ</span></div>
+          <div class="topic-desc" onclick="openTopic('t12')">Суффиксы и приставки — отдельное задание</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t12" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t12">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t12" onclick="openTopic('t12')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t12">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t12s1" onclick="toggleSub('t12','t12s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Существительные: -tion, -ment, -ness, -ity, -er/-or, -ist</span></div>
+            <div class="subtopic" id="t12s2" onclick="toggleSub('t12','t12s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Прилагательные: -ful, -less, -able, -ive, -ous, -al</span></div>            <div class="subtopic" id="t12s3" onclick="toggleSub('t12','t12s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Наречия: -ly</span></div>
+            <div class="subtopic" id="t12s4" onclick="toggleSub('t12','t12s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Глаголы: -ize, -ify, en-</span></div>
+            <div class="subtopic" id="t12s5" onclick="toggleSub('t12','t12s5')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Отрицание: un-, in-, im-, dis-, non-</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /section grammar -->
+
+
+  <!-- ══════════════════════════════
+       ЛЕКСИКА
+  ══════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-icon">📗</span>
+      <h2>Лексика — темы общения</h2>
+      <span class="section-sub">17 тем</span>
+    </div>
+
+    <div class="subsection-label">🧑 Человек и его окружение</div>
+
+    <!-- T13 Семья -->
+    <div class="topic" id="t13">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t13')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t13')">1. Семья и друзья <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t13')">Родственники, отношения, описание людей</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t13" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t13">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t13" onclick="openTopic('t13')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t13">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t13s1" onclick="toggleSub('t13','t13s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">parents, siblings, relatives — члены семьи</span></div>
+            <div class="subtopic" id="t13s2" onclick="toggleSub('t13','t13s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">friendship, relationship — дружба и отношения</span></div>
+            <div class="subtopic" id="t13s3" onclick="toggleSub('t13','t13s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">personality traits — черты характера</span></div>
+            <div class="subtopic" id="t13s4" onclick="toggleSub('t13','t13s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">family values — семейные ценности</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T14 Внешность -->
+    <div class="topic" id="t14">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t14')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t14')">2. Внешность и характер <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t14')">Описание человека, черты характера</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t14" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t14">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t14" onclick="openTopic('t14')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t14">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t14s1" onclick="toggleSub('t14','t14s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">tall, slim, curly — описание внешности</span></div>
+            <div class="subtopic" id="t14s2" onclick="toggleSub('t14','t14s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">kind, generous, stubborn — черты характера</span></div>
+            <div class="subtopic" id="t14s3" onclick="toggleSub('t14','t14s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">to look like… — описание сходства</span></div>
+            <div class="subtopic" id="t14s4" onclick="toggleSub('t14','t14s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">first impression — первое впечатление</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T15 Здоровье -->
+    <div class="topic" id="t15">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t15')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t15')">3. Здоровье и спорт <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t15')">Болезни, врачи, спорт, здоровый образ жизни</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t15" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t15">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t15" onclick="openTopic('t15')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t15">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t15s1" onclick="toggleSub('t15','t15s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">illness, symptoms, treatment — болезни и лечение</span></div>
+            <div class="subtopic" id="t15s2" onclick="toggleSub('t15','t15s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">doctor, hospital, medicine — медицина</span></div>
+            <div class="subtopic" id="t15s3" onclick="toggleSub('t15','t15s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">healthy lifestyle — здоровый образ жизни</span></div>
+            <div class="subtopic" id="t15s4" onclick="toggleSub('t15','t15s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">sport, fitness, gym — спорт и фитнес</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T16 Покупки -->
+    <div class="topic" id="t16">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t16')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t16')">4. Покупки и еда <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t16')">Магазины, продукты, рестораны, деньги</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t16" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t16">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t16" onclick="openTopic('t16')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t16">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t16s1" onclick="toggleSub('t16','t16s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">shop, supermarket, market — магазины</span></div>
+            <div class="subtopic" id="t16s2" onclick="toggleSub('t16','t16s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">price, discount, receipt — цены и покупки</span></div>
+            <div class="subtopic" id="t16s3" onclick="toggleSub('t16','t16s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">menu, order, cuisine — еда и рестораны</span></div>
+            <div class="subtopic" id="t16s4" onclick="toggleSub('t16','t16s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">eating habits — пищевые привычки</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T17 Хобби -->
+    <div class="topic" id="t17">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t17')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t17')">5. Свободное время, хобби, досуг <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t17')">Увлечения, отдых, развлечения</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t17" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t17">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t17" onclick="openTopic('t17')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t17">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t17s1" onclick="toggleSub('t17','t17s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">hobbies, interests, pastime — увлечения</span></div>
+            <div class="subtopic" id="t17s2" onclick="toggleSub('t17','t17s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">collect, draw, play, sing — виды досуга</span></div>
+            <div class="subtopic" id="t17s3" onclick="toggleSub('t17','t17s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">spend time, relax — отдых</span></div>
+            <div class="subtopic" id="t17s4" onclick="toggleSub('t17','t17s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">cinema, theatre, concerts — развлечения</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection-label">🏫 Школа и образование</div>
+
+    <!-- T18 Школа -->
+    <div class="topic" id="t18">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t18')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t18')">6. Школа, предметы, экзамены <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t18')">Учёба, оценки, расписание, ЕГЭ</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t18" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t18">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t18" onclick="openTopic('t18')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t18">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t18s1" onclick="toggleSub('t18','t18s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">subject, lesson, homework — учёба</span></div>
+            <div class="subtopic" id="t18s2" onclick="toggleSub('t18','t18s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">grade, mark, exam — оценки и экзамены</span></div>
+            <div class="subtopic" id="t18s3" onclick="toggleSub('t18','t18s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">timetable, curriculum — расписание</span></div>
+            <div class="subtopic" id="t18s4" onclick="toggleSub('t18','t18s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">university, college, degree — высшее образование</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T19 Профессии -->
+    <div class="topic" id="t19">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t19')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t19')">7. Профессии, выбор профессии <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t19')">Карьера, профессии, будущее</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t19" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t19">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t19" onclick="openTopic('t19')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t19">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t19s1" onclick="toggleSub('t19','t19s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">career, profession, dream job — карьера</span></div>
+            <div class="subtopic" id="t19s2" onclick="toggleSub('t19','t19s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">doctor, engineer, teacher… — профессии</span></div>
+            <div class="subtopic" id="t19s3" onclick="toggleSub('t19','t19s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">skills, qualities, experience — навыки</span></div>
+            <div class="subtopic" id="t19s4" onclick="toggleSub('t19','t19s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">choose, apply, interview — поиск работы</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T20 Работа -->
+    <div class="topic" id="t20">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t20')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t20')">8. Работа <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t20')">Рабочее место, обязанности, зарплата</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t20" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t20">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t20" onclick="openTopic('t20')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t20">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t20s1" onclick="toggleSub('t20','t20s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">job, workplace, colleague — работа и коллеги</span></div>
+            <div class="subtopic" id="t20s2" onclick="toggleSub('t20','t20s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">salary, bonus, raise — зарплата и надбавки</span></div>
+            <div class="subtopic" id="t20s3" onclick="toggleSub('t20','t20s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">part-time / full-time — режим работы</span></div>
+            <div class="subtopic" id="t20s4" onclick="toggleSub('t20','t20s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">hire, fire, retire — трудоустройство</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection-label">🌍 Мир вокруг</div>
+
+    <!-- T21 Город -->
+    <div class="topic" id="t21">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t21')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t21')">9. Город и деревня <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t21')">Инфраструктура, жизнь в городе и на природе</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t21" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t21">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t21" onclick="openTopic('t21')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t21">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t21s1" onclick="toggleSub('t21','t21s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">street, district, suburb — городская среда</span></div>
+            <div class="subtopic" id="t21s2" onclick="toggleSub('t21','t21s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">transport, traffic, roads — транспорт</span></div>
+            <div class="subtopic" id="t21s3" onclick="toggleSub('t21','t21s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">countryside, village, farm — деревня</span></div>
+            <div class="subtopic" id="t21s4" onclick="toggleSub('t21','t21s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">advantages / disadvantages — плюсы и минусы</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T22 Путешествия -->
+    <div class="topic" id="t22">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t22')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t22')">10. Путешествия, транспорт, отпуск <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t22')">Поездки, виды транспорта, туризм</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t22" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t22">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t22" onclick="openTopic('t22')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t22">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t22s1" onclick="toggleSub('t22','t22s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">flight, train, cruise — виды транспорта</span></div>
+            <div class="subtopic" id="t22s2" onclick="toggleSub('t22','t22s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">hotel, hostel, resort — проживание</span></div>
+            <div class="subtopic" id="t22s3" onclick="toggleSub('t22','t22s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">passport, visa, customs — документы</span></div>
+            <div class="subtopic" id="t22s4" onclick="toggleSub('t22','t22s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">sightseeing, souvenir, tourist — туризм</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T23 Погода -->
+    <div class="topic" id="t23">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t23')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t23')">11. Погода, времена года <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t23')">Климат, природные явления, сезоны</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t23" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t23">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t23" onclick="openTopic('t23')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t23">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t23s1" onclick="toggleSub('t23','t23s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">sunny, cloudy, rainy, snowy — погода</span></div>
+            <div class="subtopic" id="t23s2" onclick="toggleSub('t23','t23s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">temperature, forecast, climate — климат</span></div>
+            <div class="subtopic" id="t23s3" onclick="toggleSub('t23','t23s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">spring, summer, autumn, winter — сезоны</span></div>
+            <div class="subtopic" id="t23s4" onclick="toggleSub('t23','t23s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">storm, flood, drought — стихийные явления</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T24 Экология -->
+    <div class="topic" id="t24">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t24')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t24')">12. Природа и экология <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t24')">Окружающая среда, экологические проблемы</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t24" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t24">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t24" onclick="openTopic('t24')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t24">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t24s1" onclick="toggleSub('t24','t24s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">pollution, recycling, waste — загрязнение</span></div>
+            <div class="subtopic" id="t24s2" onclick="toggleSub('t24','t24s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">endangered species, wildlife — дикая природа</span></div>
+            <div class="subtopic" id="t24s3" onclick="toggleSub('t24','t24s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">global warming, climate change — изменение климата</span></div>
+            <div class="subtopic" id="t24s4" onclick="toggleSub('t24','t24s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">protect, conserve, sustain — охрана природы</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T25 Страны -->
+    <div class="topic" id="t25">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t25')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t25')">13. Страны, культура, традиции <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t25')">Великобритания, США, Россия — столицы, символы</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t25" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t25">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t25" onclick="openTopic('t25')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t25">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t25s1" onclick="toggleSub('t25','t25s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">capital, flag, national symbol — символы страны</span></div>
+            <div class="subtopic" id="t25s2" onclick="toggleSub('t25','t25s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">tradition, custom, festival — традиции</span></div>
+            <div class="subtopic" id="t25s3" onclick="toggleSub('t25','t25s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">UK: London, Big Ben, Parliament — Великобритания</span></div>
+            <div class="subtopic" id="t25s4" onclick="toggleSub('t25','t25s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">USA: Washington D.C., Statue of Liberty — США</span></div>
+            <div class="subtopic" id="t25s5" onclick="toggleSub('t25','t25s5')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Russia: Moscow, Red Square, Kremlin — Россия</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection-label">💻 Современная жизнь</div>
+
+    <!-- T26 Технологии -->
+    <div class="topic" id="t26">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t26')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t26')">14. Технологии, интернет, гаджеты <span class="badge badge-star">⭐ базовое</span></div>
+          <div class="topic-desc" onclick="openTopic('t26')">Цифровой мир, соцсети, устройства</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t26" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t26">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t26" onclick="openTopic('t26')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t26">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t26s1" onclick="toggleSub('t26','t26s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">smartphone, laptop, tablet — устройства</span></div>
+            <div class="subtopic" id="t26s2" onclick="toggleSub('t26','t26s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">social media, online, app — соцсети</span></div>
+            <div class="subtopic" id="t26s3" onclick="toggleSub('t26','t26s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">search, download, upload — интернет-действия</span></div>
+            <div class="subtopic" id="t26s4" onclick="toggleSub('t26','t26s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">cyberbullying, privacy, security — безопасность</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T27 СМИ -->
+    <div class="topic" id="t27">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t27')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t27')">15. СМИ, телевидение, книги</div>
+          <div class="topic-desc" onclick="openTopic('t27')">Медиа, чтение, новости, реклама</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t27" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t27">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t27" onclick="openTopic('t27')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t27">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t27s1" onclick="toggleSub('t27','t27s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">newspaper, magazine, blog — печатные СМИ</span></div>
+            <div class="subtopic" id="t27s2" onclick="toggleSub('t27','t27s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">TV channel, programme, news — телевидение</span></div>
+            <div class="subtopic" id="t27s3" onclick="toggleSub('t27','t27s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">novel, fiction, non-fiction — литература</span></div>
+            <div class="subtopic" id="t27s4" onclick="toggleSub('t27','t27s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">advertising, media influence — реклама и влияние</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T28 Музыка -->
+    <div class="topic" id="t28">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t28')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t28')">16. Музыка, кино, искусство</div>
+          <div class="topic-desc" onclick="openTopic('t28')">Культурная жизнь, жанры, впечатления</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t28" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t28">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t28" onclick="openTopic('t28')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t28">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t28s1" onclick="toggleSub('t28','t28s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">genre: rock, jazz, classical — музыкальные жанры</span></div>
+            <div class="subtopic" id="t28s2" onclick="toggleSub('t28','t28s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">film, director, actor — кино</span></div>
+            <div class="subtopic" id="t28s3" onclick="toggleSub('t28','t28s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">painting, sculpture, exhibition — изобразительное искусство</span></div>
+            <div class="subtopic" id="t28s4" onclick="toggleSub('t28','t28s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">impressive, moving, boring — оценка произведений</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T29 Глобальные проблемы -->
+    <div class="topic" id="t29">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t29')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t29')">17. Глобальные проблемы <span class="badge badge-hot">🔥 топ ЕГЭ</span></div>
+          <div class="topic-desc" onclick="openTopic('t29')">Бедность, война, права человека, общество</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t29" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t29">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t29" onclick="openTopic('t29')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t29">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t29s1" onclick="toggleSub('t29','t29s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">poverty, hunger, inequality — бедность</span></div>
+            <div class="subtopic" id="t29s2" onclick="toggleSub('t29','t29s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">war, conflict, peace — война и мир</span></div>
+            <div class="subtopic" id="t29s3" onclick="toggleSub('t29','t29s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">human rights, freedom, justice — права человека</span></div>
+            <div class="subtopic" id="t29s4" onclick="toggleSub('t29','t29s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">volunteer, charity, donate — волонтёрство</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /section лексика -->
+
+
+  <!-- ══════════════════════════════
+       РЕЧЕВЫЕ КЛИШЕ
+  ══════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-icon">✍️</span>
+      <h2>Речевые клише и письмо</h2>
+      <span class="section-sub">4 темы</span>
+    </div>
+
+    <!-- T30 Письмо -->
+    <div class="topic" id="t30">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t30')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t30')">1. Личное письмо <span class="badge badge-hot">🔥 топ ЕГЭ</span></div>
+          <div class="topic-desc" onclick="openTopic('t30')">Структура, клише, оформление</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t30" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t30">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t30" onclick="openTopic('t30')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t30">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t30s1" onclick="toggleSub('t30','t30s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Dear …, — обращение ⭐</span></div>
+            <div class="subtopic" id="t30s2" onclick="toggleSub('t30','t30s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Thanks for your letter. / It was great to hear from you. ⭐</span></div>
+            <div class="subtopic" id="t30s3" onclick="toggleSub('t30','t30s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Ответы на вопросы друга ⭐</span></div>
+            <div class="subtopic" id="t30s4" onclick="toggleSub('t30','t30s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">3 вопроса другу ⭐</span></div>
+            <div class="subtopic" id="t30s5" onclick="toggleSub('t30','t30s5')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Write back soon. / Best wishes, … — концовка ⭐</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T31 Эссе -->
+    <div class="topic" id="t31">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t31')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t31')">2. Эссе (развёрнутое высказывание) <span class="badge badge-hot">🔥 топ ЕГЭ</span></div>
+          <div class="topic-desc" onclick="openTopic('t31')">Структура, аргументы, контраргументы, вывод</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t31" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t31">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t31" onclick="openTopic('t31')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t31">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t31s1" onclick="toggleSub('t31','t31s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Вступление: Nowadays… / It is widely believed… ⭐</span></div>
+            <div class="subtopic" id="t31s2" onclick="toggleSub('t31','t31s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Своё мнение: In my opinion… / I strongly believe… ⭐</span></div>
+            <div class="subtopic" id="t31s3" onclick="toggleSub('t31','t31s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Аргументы: First of all… / Moreover… / In addition… ⭐</span></div>
+            <div class="subtopic" id="t31s4" onclick="toggleSub('t31','t31s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Контраргумент: However… / On the other hand… ⭐</span></div>
+            <div class="subtopic" id="t31s5" onclick="toggleSub('t31','t31s5')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Вывод: To sum up… / In conclusion… ⭐</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T32 Устная речь -->
+    <div class="topic" id="t32">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t32')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t32')">3. Устная речь, монолог, диалог <span class="badge badge-hot">🔥 топ ЕГЭ</span></div>
+          <div class="topic-desc" onclick="openTopic('t32')">Описание фото, монолог, диалог-расспрос</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t32" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t32">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t32" onclick="openTopic('t32')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t32">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t32s1" onclick="toggleSub('t32','t32s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">In this photo I can see… — описание фото ⭐</span></div>
+            <div class="subtopic" id="t32s2" onclick="toggleSub('t32','t32s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">The photo was probably taken… — место и время ⭐</span></div>
+            <div class="subtopic" id="t32s3" onclick="toggleSub('t32','t32s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">I think / I suppose / It seems to me… — предположения ⭐</span></div>
+            <div class="subtopic" id="t32s4" onclick="toggleSub('t32','t32s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Could you tell me…? / I'd like to know… — вопросы ⭐</span></div>
+            <div class="subtopic" id="t32s5" onclick="toggleSub('t32','t32s5')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Both photos show… / Unlike photo 1, photo 2… — сравнение</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T33 Связующие слова -->
+    <div class="topic" id="t33">
+      <div class="topic-top">
+        <div class="cb" onclick="toggleMain('t33')">
+          <svg class="check-svg" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <svg class="dash-svg" width="10" height="2" viewBox="0 0 10 2" fill="none" style="display:none"><path d="M1 1h8" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="topic-body">
+          <div class="topic-title" onclick="openTopic('t33')">4. Связующие слова и дискурсивные маркеры <span class="badge badge-hot">🔥 топ ЕГЭ</span></div>
+          <div class="topic-desc" onclick="openTopic('t33')">Linking words — нужны в каждом задании</div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-bg"><div class="mini-bar-fill" id="mb-t33" style="width:0%"></div></div>
+            <div class="mini-bar-label" id="ml-t33">0 / 0</div>
+          </div>
+        </div>
+        <button class="arrow-btn" id="arr-t33" onclick="openTopic('t33')">▾</button>
+      </div>
+      <div class="topic-content" id="cnt-t33">
+        <div class="topic-content-inner">
+          <div class="subtopic-list">
+            <div class="subtopic" id="t33s1" onclick="toggleSub('t33','t33s1')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Добавление: also, besides, furthermore, what is more ⭐</span></div>
+            <div class="subtopic" id="t33s2" onclick="toggleSub('t33','t33s2')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Противопоставление: but, however, although, nevertheless ⭐</span></div>
+            <div class="subtopic" id="t33s3" onclick="toggleSub('t33','t33s3')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Причина: because, since, as, due to ⭐</span></div>
+            <div class="subtopic" id="t33s4" onclick="toggleSub('t33','t33s4')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Следствие: so, therefore, as a result, consequently ⭐</span></div>
+            <div class="subtopic" id="t33s5" onclick="toggleSub('t33','t33s5')"><div class="scb"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span class="sub-text">Перечисление: first, then, finally, to begin with ⭐</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /section клише -->
+
+</div><!-- /wrap -->
+
+<script>
+// ─────────────────────────────────────────
+// ДАННЫЕ: все топики и их подтемы
+// ─────────────────────────────────────────
+const TOPICS = {
+  t1:  ['t1s1','t1s2','t1s3','t1s4','t1s5','t1s6','t1s7'],
+  t2:  ['t2s1','t2s2','t2s3','t2s4','t2s5','t2s6'],
+  t3:  ['t3s1','t3s2','t3s3','t3s4'],
+  t4:  ['t4s1','t4s2','t4s3','t4s4'],
+  t5:  ['t5s1','t5s2','t5s3','t5s4'],
+  t6:  ['t6s1','t6s2','t6s3','t6s4'],
+  t7:  ['t7s1','t7s2','t7s3','t7s4','t7s5','t7s6'],
+  t8:  ['t8s1','t8s2','t8s3','t8s4'],
+  t9:  ['t9s1','t9s2'],
+  t10: ['t10s1','t10s2','t10s3'],
+  t11: ['t11s1','t11s2','t11s3','t11s4','t11s5','t11s6','t11s7'],
+  t12: ['t12s1','t12s2','t12s3','t12s4','t12s5'],
+  t13: ['t13s1','t13s2','t13s3','t13s4'],
+  t14: ['t14s1','t14s2','t14s3','t14s4'],
+  t15: ['t15s1','t15s2','t15s3','t15s4'],
+  t16: ['t16s1','t16s2','t16s3','t16s4'],
+  t17: ['t17s1','t17s2','t17s3','t17s4'],
+  t18: ['t18s1','t18s2','t18s3','t18s4'],
+  t19: ['t19s1','t19s2','t19s3','t19s4'],
+  t20: ['t20s1','t20s2','t20s3','t20s4'],
+  t21: ['t21s1','t21s2','t21s3','t21s4'],
+  t22: ['t22s1','t22s2','t22s3','t22s4'],
+  t23: ['t23s1','t23s2','t23s3','t23s4'],
+  t24: ['t24s1','t24s2','t24s3','t24s4'],
+  t25: ['t25s1','t25s2','t25s3','t25s4','t25s5'],
+  t26: ['t26s1','t26s2','t26s3','t26s4'],
+  t27: ['t27s1','t27s2','t27s3','t27s4'],
+  t28: ['t28s1','t28s2','t28s3','t28s4'],
+  t29: ['t29s1','t29s2','t29s3','t29s4'],
+  t30: ['t30s1','t30s2','t30s3','t30s4','t30s5'],
+  t31: ['t31s1','t31s2','t31s3','t31s4','t31s5'],
+  t32: ['t32s1','t32s2','t32s3','t32s4','t32s5'],
+  t33: ['t33s1','t33s2','t33s3','t33s4','t33s5'],
+};
+
+// ─────────────────────────────────────────
+// LOCALSTORAGE
+// ─────────────────────────────────────────
+function save(key, val) {
+  try { localStorage.setItem('ege_' + key, val ? '1' : '0'); } catch(e){}
+}
+function load(key) {
+  try { return localStorage.getItem('ege_' + key) === '1'; } catch(e){ return false; }
+}
+
+// ─────────────────────────────────────────
+// ПОДТЕМА: переключить
+// ─────────────────────────────────────────
+function toggleSub(topicId, subId) {
+  const el = document.getElementById(subId);
+  if (!el) return;
+  const isDone = el.classList.toggle('sdone');
+  save(subId, isDone);
+  updateTopicState(topicId);
+  updateGlobalBar();
+}
+
+// ─────────────────────────────────────────
+// ГЛАВНЫЙ ЧЕКБОКС: отметить все / снять все
+// ─────────────────────────────────────────
+function toggleMain(topicId) {
+  const subs = TOPICS[topicId] || [];
+  const allDone = subs.every(sid => document.getElementById(sid)?.classList.contains('sdone'));
+  subs.forEach(sid => {
+    const el = document.getElementById(sid);
+    if (!el) return;
+    if (allDone) { el.classList.remove('sdone'); save(sid, false); }
+    else         { el.classList.add('sdone');    save(sid, true);  }
+  });
+  updateTopicState(topicId);
+  updateGlobalBar();
+}
+
+// ─────────────────────────────────────────
+// ОБНОВИТЬ СОСТОЯНИЕ КАРТОЧКИ
+// ─────────────────────────────────────────
+function updateTopicState(topicId) {
+  const card = document.getElementById(topicId);
+  if (!card) return;
+  const subs = TOPICS[topicId] || [];
+  const total = subs.length;
+  const done  = subs.filter(sid => document.getElementById(sid)?.classList.contains('sdone')).length;
+
+  // классы карточки
+  card.classList.remove('done','partial');
+  if (done === total && total > 0) card.classList.add('done');
+  else if (done > 0)               card.classList.add('partial');
+
+  // мини-бар
+  const fill  = document.getElementById('mb-' + topicId);
+  const label = document.getElementById('ml-' + topicId);
+  if (fill)  fill.style.width  = total ? (done / total * 100) + '%' : '0%';
+  if (label) label.textContent = done + ' / ' + total;
+}
+
+// ─────────────────────────────────────────
+// ГЛОБАЛЬНЫЙ ПРОГРЕСС-БАР
+// ─────────────────────────────────────────
+function updateGlobalBar() {
+  let total = 0, done = 0;
+  Object.entries(TOPICS).forEach(([tid, subs]) => {
+    total += subs.length;
+    done  += subs.filter(sid => document.getElementById(sid)?.classList.contains('sdone')).length;
+  });
+  const pct = total ? Math.round(done / total * 100) : 0;
+  const fill  = document.getElementById('barFill');
+  const label = document.getElementById('barLabel');
+  if (fill)  fill.style.width  = pct + '%';
+  if (label) label.textContent = done + ' / ' + total + ' подтем изучено (' + pct + '%)';
+}
+// ─────────────────────────────────────────
+// РАСКРЫТЬ / ЗАКРЫТЬ КАРТОЧКУ
+// ─────────────────────────────────────────
+function openTopic(topicId) {
+  const cnt = document.getElementById('cnt-' + topicId);
+  const arr = document.getElementById('arr-' + topicId);
+  if (!cnt) return;
+  const isOpen = cnt.classList.contains('open');
+  // закрыть все остальные
+  Object.keys(TOPICS).forEach(tid => {
+    const c = document.getElementById('cnt-' + tid);
+    const a = document.getElementById('arr-' + tid);
+    if (c) c.classList.remove('open');
+    if (a) a.classList.remove('open');
+  });
+  // открыть текущую если была закрыта
+  if (!isOpen) {
+    cnt.classList.add('open');
+    if (arr) arr.classList.add('open');
+    // плавный скролл к карточке
+    setTimeout(() => {
+      const card = document.getElementById(topicId);
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  }
+}
+
+// ─────────────────────────────────────────
+// ПОИСК
+// ─────────────────────────────────────────
+function initSearch() {
+  const input = document.getElementById('searchInput');
+  if (!input) return;
+  input.addEventListener('input', function() {
+    const q = this.value.trim().toLowerCase();
+    Object.keys(TOPICS).forEach(tid => {
+      const card = document.getElementById(tid);
+      if (!card) return;
+      if (!q) {
+        card.style.display = '';
+        return;
+      }
+      const text = card.textContent.toLowerCase();
+      card.style.display = text.includes(q) ? '' : 'none';
+    });
+    // скрыть пустые subsection-label
+    document.querySelectorAll('.subsection-label').forEach(label => {
+      let next = label.nextElementSibling;
+      let hasVisible = false;
+      while (next && !next.classList.contains('subsection-label')) {
+        if (next.classList.contains('topic') && next.style.display !== 'none') {
+          hasVisible = true;
+          break;
+        }
+        next = next.nextElementSibling;
+      }
+      label.style.display = hasVisible ? '' : 'none';
+    });
+  });
+}
+
+// ─────────────────────────────────────────
+// ФИЛЬТР: показать только незавершённые
+// ─────────────────────────────────────────
+function initFilter() {
+  const btn = document.getElementById('filterBtn');
+  if (!btn) return;
+  let filterOn = false;
+  btn.addEventListener('click', function() {
+    filterOn = !filterOn;
+    btn.classList.toggle('active', filterOn);
+    btn.textContent = filterOn ? '✅ Показать все' : '🔍 Только незавершённые';
+    Object.keys(TOPICS).forEach(tid => {
+      const card = document.getElementById(tid);
+      if (!card) return;
+      if (!filterOn) {
+        card.style.display = '';
+        return;
+      }
+      const isDone = card.classList.contains('done');
+      card.style.display = isDone ? 'none' : '';
+    });
+    // скрыть пустые subsection-label
+    document.querySelectorAll('.subsection-label').forEach(label => {
+      let next = label.nextElementSibling;
+      let hasVisible = false;
+      while (next && !next.classList.contains('subsection-label')) {
+        if (next.classList.contains('topic') && next.style.display !== 'none') {
+          hasVisible = true;
+          break;
+        }
+        next = next.nextElementSibling;
+      }
+      label.style.display = hasVisible ? '' : 'none';
+    });
+  });
+}
+
+// ─────────────────────────────────────────
+// СБРОСИТЬ ПРОГРЕСС
+// ─────────────────────────────────────────
+function initReset() {
+  const btn = document.getElementById('resetBtn');
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    if (!confirm('Сбросить весь прогресс? Это действие нельзя отменить.')) return;
+    Object.entries(TOPICS).forEach(([tid, subs]) => {
+      subs.forEach(sid => {
+        const el = document.getElementById(sid);
+        if (el) el.classList.remove('sdone');
+        save(sid, false);
+      });
+      updateTopicState(tid);
+    });
+    updateGlobalBar();
+  });
+}
+
+// ─────────────────────────────────────────
+// ИНИЦИАЛИЗАЦИЯ: загрузить сохранённый прогресс
+// ─────────────────────────────────────────
+function init() {
+  Object.entries(TOPICS).forEach(([tid, subs]) => {
+    subs.forEach(sid => {
+      if (load(sid)) {
+        const el = document.getElementById(sid);
+        if (el) el.classList.add('sdone');
+      }
+    });
+    updateTopicState(tid);
+  });
+  updateGlobalBar();
+  initSearch();
+  initFilter();
+  initReset();
+}
+
+// ─────────────────────────────────────────
+// ЗАПУСК
+// ─────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
